@@ -1,0 +1,168 @@
+@import 'tailwindcss';
+
+/* ──────────────────────────────────────────────────────────────
+   Identité visuelle HIS — noir · bleu · orange
+   ────────────────────────────────────────────────────────────── */
+@theme {
+  --color-navy-50: #eef4fd;
+  --color-navy-100: #d7e4f8;
+  --color-navy-200: #adc7f0;
+  --color-navy-300: #7ba3e4;
+  --color-navy-400: #4a7bd2;
+  --color-navy-500: #2559b4;
+  --color-navy-600: #1a4491;
+  --color-navy-700: #133672;
+  --color-navy-800: #0e2755;
+  --color-navy-900: #0a1c3d;
+  --color-navy-950: #051026;
+
+  --color-flame-50: #fff5ed;
+  --color-flame-100: #ffe7d3;
+  --color-flame-200: #ffcaa6;
+  --color-flame-300: #ffa56d;
+  --color-flame-400: #ff7d3a;
+  --color-flame-500: #f26522;
+  --color-flame-600: #dc4a10;
+  --color-flame-700: #b6360f;
+  --color-flame-800: #912d14;
+  --color-flame-900: #762814;
+
+  --color-ink: #0b0f16;
+  --color-ink-soft: #1a212c;
+
+  --font-sans:
+    'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', 'Noto Sans', 'Noto Sans Arabic', 'Segoe UI Arabic',
+    Arial, sans-serif;
+
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    @apply bg-white font-sans text-ink antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* L'arabe respire mieux avec un interlignage un peu plus large. */
+  [dir='rtl'] body {
+    line-height: 1.85;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-bold tracking-tight text-balance;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-flame-500;
+  }
+
+  ::selection {
+    @apply bg-flame-500 text-white;
+  }
+}
+
+/* Ces deux classes servent de base à des variantes (@apply) : en Tailwind v4,
+   cela impose de les déclarer en @utility et non en @layer components. */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-md px-6 py-3.5 text-sm font-bold uppercase
+    tracking-wider transition duration-200 ease-[var(--ease-out-soft)]
+    active:translate-y-px;
+}
+
+@utility card {
+  @apply rounded-xl border border-navy-100 bg-white transition duration-300 ease-[var(--ease-out-soft)];
+}
+
+@layer components {
+  /* Largeur de contenu unique pour tout le site. */
+  .container-his {
+    @apply mx-auto w-full max-w-[1240px] px-5 sm:px-8 lg:px-10;
+  }
+
+  .section {
+    @apply py-16 sm:py-20 lg:py-24;
+  }
+
+  /* Titre de section : sur-titre orange + titre. */
+  .eyebrow {
+    @apply mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-flame-500;
+  }
+
+  .eyebrow::after {
+    content: '';
+    @apply h-px w-10 flex-none bg-flame-500/50;
+  }
+
+  .btn-primary {
+    @apply btn bg-flame-500 text-white shadow-lg shadow-flame-500/25
+      hover:bg-flame-600 hover:shadow-xl hover:shadow-flame-500/30;
+  }
+
+  .btn-navy {
+    @apply btn bg-navy-800 text-white hover:bg-navy-700;
+  }
+
+  .btn-outline {
+    @apply btn border-2 border-white/70 text-white hover:border-white hover:bg-white/10;
+  }
+
+  .btn-ghost {
+    @apply btn border-2 border-navy-800/20 text-navy-800 hover:border-navy-800/40 hover:bg-navy-50;
+  }
+
+  .card-hover {
+    @apply card hover:-translate-y-1 hover:border-flame-200 hover:shadow-xl hover:shadow-navy-900/8;
+  }
+
+  /* Trame technique discrète en fond de section sombre. */
+  .grid-pattern {
+    background-image:
+      linear-gradient(to right, rgb(255 255 255 / 0.045) 1px, transparent 1px),
+      linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+}
+
+@layer utilities {
+  /* Retourne les icônes directionnelles (flèches, chevrons) en arabe.
+     Sélecteur [dir] plutôt que :dir() — compatible avec les navigateurs plus anciens. */
+  [dir='rtl'] .flip-rtl {
+    transform: scaleX(-1);
+  }
+
+  .animate-rise {
+    animation: rise 0.7s var(--ease-out-soft) both;
+  }
+
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(18px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
