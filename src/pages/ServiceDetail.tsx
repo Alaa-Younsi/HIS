@@ -135,7 +135,7 @@ export function ServiceDetail() {
               </div>
             </div>
 
-            <h2 className="mt-10 text-sm font-bold uppercase tracking-widest text-navy-900/45">
+            <h2 className="mt-10 text-sm font-bold uppercase tracking-widest text-navy-900/70">
               {t(ui.sections.otherServices)}
             </h2>
             <ul className="mt-4 space-y-2">

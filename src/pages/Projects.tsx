@@ -69,7 +69,7 @@ export function Projects() {
           </div>
 
           {visible.length === 0 ? (
-            <p className="mt-12 text-center text-navy-900/60">{t(ui.labels.noProjects)}</p>
+            <p className="mt-12 text-center text-navy-900/70">{t(ui.labels.noProjects)}</p>
           ) : (
             <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {visible.map((project) => (
@@ -80,7 +80,7 @@ export function Projects() {
                       alt={t(project.title)}
                       ratio="4/3"
                       fallbackIcon="fire"
-                      sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                      sizes="(min-width: 1240px) 372px, (min-width: 1024px) 31vw, (min-width: 640px) 47vw, 92vw"
                       imgClassName="transition-transform duration-500 group-hover:scale-105"
                     />
                     <span className="absolute start-4 top-4 rounded-full bg-flame-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
@@ -96,7 +96,7 @@ export function Projects() {
 
                   <div className="p-6">
                     <h2 className="text-lg leading-snug text-navy-900">{t(project.title)}</h2>
-                    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-navy-900/55">
+                    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-navy-900/70">
                       <Icon name="pin" size={14} className="text-flame-500" />
                       {t(project.location)}
                       {project.year && <span className="text-navy-300">·</span>}

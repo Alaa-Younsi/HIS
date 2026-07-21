@@ -249,7 +249,7 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-navy-900/60">
+      <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-navy-900/70">
         {label}
         {required && <span className="text-flame-500"> *</span>}
       </span>
@@ -273,7 +273,7 @@ function ContactCard({
         <Icon name={icon} size={21} />
       </span>
       <div className="min-w-0">
-        <p className="text-xs font-bold uppercase tracking-wider text-navy-900/50">{label}</p>
+        <p className="text-xs font-bold uppercase tracking-wider text-navy-900/70">{label}</p>
         <div className="mt-1 text-sm text-navy-900/80">{children}</div>
       </div>
     </div>

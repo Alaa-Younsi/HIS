@@ -16,6 +16,21 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
+    <!--
+      Image du hero d'accueil : c'est le plus grand élément affiché (LCP).
+      Sans ce préchargement, le navigateur ne la découvre qu'après avoir exécuté
+      le JavaScript de la page, ce qui retarde l'affichage d'environ 0,6 s.
+    -->
+    <link
+      rel="preload"
+      as="image"
+      href="/images/hero-chantier.jpg"
+      imagesrcset="/images/hero-chantier-400.webp 400w, /images/hero-chantier-800.webp 800w, /images/hero-chantier-1200.webp 1200w, /images/hero-chantier-1600.webp 1600w, /images/hero-chantier-1920.webp 1920w"
+      imagesizes="100vw"
+      fetchpriority="high"
+      type="image/webp"
+    />
+
     <!-- La carte Google n'est chargée que sur la page Contact : on prépare la connexion sans bloquer le rendu. -->
     <link rel="dns-prefetch" href="https://maps.google.com" />
   </head>

@@ -22,7 +22,7 @@ export function SectionHeading({
   return (
     <div className={`max-w-2xl ${centered ? 'mx-auto text-center' : ''}`}>
       {eyebrow && (
-        <p className={`eyebrow ${centered ? 'justify-center' : ''}`}>{t(eyebrow)}</p>
+        <p className={`eyebrow ${centered ? 'eyebrow-center justify-center' : ''}`}>{t(eyebrow)}</p>
       )}
       <h2
         className={`text-3xl leading-tight sm:text-4xl lg:text-[2.6rem] ${

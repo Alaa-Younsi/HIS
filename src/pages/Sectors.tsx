@@ -56,7 +56,7 @@ export function Sectors() {
           <SectionHeading title={ui.sections.clients} intro={clientsIntro} align="center" />
           <PartnerStrip partners={clients} className="mt-10" />
 
-          <h2 className="mt-16 text-center text-sm font-bold uppercase tracking-[0.18em] text-navy-900/45">
+          <h2 className="mt-16 text-center text-sm font-bold uppercase tracking-[0.18em] text-navy-900/70">
             {t(ui.sections.suppliers)}
           </h2>
           <PartnerStrip partners={suppliers} className="mt-6" compact />

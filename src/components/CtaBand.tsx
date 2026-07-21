@@ -10,19 +10,23 @@ export function CtaBand() {
   const { lang, t } = useLang();
 
   return (
-    <section className="relative overflow-hidden bg-navy-900">
-      <div className="grid-pattern absolute inset-0" aria-hidden="true" />
-      <div
-        className="absolute -bottom-32 -start-16 h-80 w-80 rounded-full bg-flame-500/12 blur-3xl"
-        aria-hidden="true"
-      />
-      <div className="container-his relative flex flex-col items-center gap-8 py-16 text-center sm:py-20">
-        <div className="max-w-2xl">
-          <h2 className="text-3xl text-white sm:text-4xl">{t(company.closing)}</h2>
-          <p className="mt-4 text-base text-white/70 sm:text-lg">{t(company.tagline)}</p>
+    <section className="relative overflow-hidden bg-flame-600">
+      <div className="grid-pattern absolute inset-0 opacity-60" aria-hidden="true" />
+      <div className="container-his relative flex flex-col items-center gap-8 py-14 text-center sm:py-16 lg:flex-row lg:justify-between lg:text-start">
+        <div className="flex items-center gap-5">
+          <Icon name="shield" size={44} className="hidden flex-none text-white/80 sm:block" />
+          {/* Accroche courte en titre, le paragraphe complet en appui :
+              l'inverse donnait un pavé de texte dans le bandeau rouge. */}
+          <div className="max-w-2xl">
+            <h2 className="text-2xl text-white sm:text-3xl">{t(company.tagline)}</h2>
+            <p className="mt-3 text-sm leading-relaxed text-white/85">{t(company.closing)}</p>
+          </div>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Link to={href(lang, 'contact')} className="btn-primary">
+        <div className="flex flex-none flex-col gap-3 sm:flex-row">
+          <Link
+            to={href(lang, 'contact')}
+            className="btn bg-navy-900 text-white shadow-lg shadow-navy-950/25 hover:bg-navy-800"
+          >
             {t(ui.cta.quote)}
             <Icon name="arrow" size={17} className="flip-rtl" />
           </Link>

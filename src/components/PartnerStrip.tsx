@@ -16,15 +16,18 @@ export function PartnerStrip({
   compact?: boolean;
 }) {
   return (
+    // Séparateurs dessinés en `outline` (hors flux) plutôt qu'avec des
+    // gouttières colorées : la dernière ligne peut être incomplète sans
+    // laisser de case vide teintée.
     <ul
-      className={`grid gap-px overflow-hidden rounded-xl bg-navy-100 ${
+      className={`grid overflow-hidden rounded-xl bg-white ring-1 ring-navy-100 ${
         compact
           ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
           : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4'
       } ${className}`}
     >
       {partners.map((partner) => (
-        <li key={partner.name} className="bg-white">
+        <li key={partner.name} className="outline outline-navy-100">
           <PartnerLogo partner={partner} compact={compact} />
         </li>
       ))}
@@ -35,10 +38,12 @@ export function PartnerStrip({
 function PartnerLogo({ partner, compact }: { partner: Partner; compact: boolean }) {
   const [failed, setFailed] = useState(false);
 
+  // Sans fichier logo, le nom composé proprement fait office de logo :
+  // c'est lisible et volontaire, contrairement à une image cassée.
   const content = failed ? (
     <span
-      className={`font-bold uppercase tracking-wide text-navy-900/45 ${
-        compact ? 'text-xs' : 'text-sm'
+      className={`text-center font-extrabold uppercase leading-tight tracking-[0.08em] text-navy-800/75 transition-colors duration-300 group-hover:text-flame-600 ${
+        compact ? 'text-xs' : 'text-sm sm:text-base'
       }`}
     >
       {partner.name}
@@ -56,7 +61,9 @@ function PartnerLogo({ partner, compact }: { partner: Partner; compact: boolean 
     />
   );
 
-  const wrapperClass = `flex h-full items-center justify-center px-5 ${compact ? 'py-6' : 'py-8'}`;
+  const wrapperClass = `group flex h-full items-center justify-center px-5 transition-colors duration-300 hover:bg-navy-50/70 ${
+    compact ? 'py-6' : 'py-8'
+  }`;
 
   return partner.url ? (
     <a href={partner.url} target="_blank" rel="noreferrer noopener" className={wrapperClass}>

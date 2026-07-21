@@ -1,5 +1,13 @@
 import { useState } from 'react';
+import { imageVariants } from '@/content/image-variants';
 import { Icon, type IconName } from './Icon';
+
+/** "/images/x.jpg" + 800 + "webp" → "/images/x-800.webp" */
+const variantUrl = (src: string, width: number, ext: 'jpg' | 'webp') =>
+  `${src.slice(0, -'.jpg'.length)}-${width}.${ext}`;
+
+const srcSet = (src: string, widths: readonly number[], ext: 'jpg' | 'webp') =>
+  widths.map((width) => `${variantUrl(src, width, ext)} ${width}w`).join(', ');
 
 type ImgProps = {
   src: string;
@@ -35,26 +43,41 @@ export function Img({
 }: ImgProps) {
   const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
 
+  // Déclinaisons générées par scripts/generate-image-variants.py. Absentes
+  // (photo ajoutée depuis), on retombe sur le fichier pleine résolution.
+  const widths = imageVariants[src];
+  const resolution = sizes ?? '100vw';
+
+  const image = (
+    <img
+      src={src}
+      alt={alt}
+      loading={priority ? 'eager' : 'lazy'}
+      decoding={priority ? 'sync' : 'async'}
+      fetchPriority={priority ? 'high' : 'auto'}
+      {...(widths ? { srcSet: srcSet(src, widths, 'jpg'), sizes: resolution } : {})}
+      onLoad={() => setStatus('loaded')}
+      onError={() => setStatus('error')}
+      className={`h-full w-full object-cover transition-opacity duration-500 ${
+        status === 'loaded' ? 'opacity-100' : 'opacity-0'
+      } ${imgClassName}`}
+    />
+  );
+
   return (
     <div
       className={`relative overflow-hidden bg-navy-900 ${className}`}
       style={{ aspectRatio: ratio }}
     >
-      {status !== 'error' && (
-        <img
-          src={src}
-          alt={alt}
-          loading={priority ? 'eager' : 'lazy'}
-          decoding={priority ? 'sync' : 'async'}
-          fetchPriority={priority ? 'high' : 'auto'}
-          {...(sizes ? { sizes } : {})}
-          onLoad={() => setStatus('loaded')}
-          onError={() => setStatus('error')}
-          className={`h-full w-full object-cover transition-opacity duration-500 ${
-            status === 'loaded' ? 'opacity-100' : 'opacity-0'
-          } ${imgClassName}`}
-        />
-      )}
+      {status !== 'error' &&
+        (widths ? (
+          <picture>
+            <source type="image/webp" srcSet={srcSet(src, widths, 'webp')} sizes={resolution} />
+            {image}
+          </picture>
+        ) : (
+          image
+        ))}
 
       {status !== 'loaded' && (
         <div

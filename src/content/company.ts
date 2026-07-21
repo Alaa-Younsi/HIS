@@ -7,13 +7,22 @@ import type { Localized } from '@/i18n/types';
  * ─────────────────────────────────────────────────────────────
  */
 
+/**
+ * Domaine public du site — sans barre oblique finale.
+ *
+ * Le jour où le nom de domaine définitif est branché, il suffit de définir la
+ * variable d'environnement `VITE_SITE_URL` dans Vercel (Settings → Environment
+ * Variables) puis de redéployer : URL canoniques, hreflang, sitemap.xml,
+ * robots.txt et images de partage suivent automatiquement. Aucun code à toucher.
+ */
+const siteUrl = (import.meta.env.VITE_SITE_URL ?? 'https://his-steel.vercel.app').replace(/\/+$/, '');
+
 export const company = {
   name: 'HIS',
   legalName: 'HIS — HVAC and Industrial Solution',
   fullName: 'HVAC and Industrial Solution Algeria',
 
-  /** URL de production. Sert aux balises canoniques, au sitemap et aux partages réseaux sociaux. */
-  siteUrl: 'https://his-dz.com',
+  siteUrl,
 
   slogan: {
     fr: 'La performance commence par la confiance',

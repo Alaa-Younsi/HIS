@@ -44,7 +44,9 @@ export function LanguageSwitcher({ variant = 'light' }: { variant?: 'light' | 'd
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-haspopup="listbox"
-        aria-label={t(ui.labels.language)}
+        // Le nom accessible doit contenir le texte visible (« FR »), sinon la
+        // commande vocale « cliquer sur FR » ne trouve pas le bouton.
+        aria-label={`${t(ui.labels.language)} : ${lang.toUpperCase()}`}
         className={`flex items-center gap-1.5 rounded px-2 py-1 text-xs font-semibold transition ${
           isLight ? 'text-white/85 hover:text-white' : 'text-navy-800 hover:text-flame-600'
         }`}

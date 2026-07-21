@@ -3,6 +3,26 @@
 Déposez les photos ici. **Tant qu'un fichier est absent, le site affiche
 automatiquement un visuel de repli aux couleurs HIS** — rien ne casse.
 
+> ⚠️ **Les photos actuellement en place sont des images libres de droits
+> provisoires** (source : Pexels), mises là en attendant vos vraies photos de
+> chantier. Remplacez chaque fichier par le vôtre **en gardant le même nom**,
+> puis relancez la commande de l'étape 4 ci-dessous.
+
+## Après avoir remplacé une photo — étape 4, obligatoire
+
+```bash
+python scripts/generate-image-variants.py
+```
+
+Cette commande fabrique automatiquement les versions 400 / 600 / 800 / 1200 px
+(en JPEG et en WebP) que le site envoie selon la taille de l'écran du visiteur.
+C'est ce qui permet à un téléphone de télécharger 30 Ko au lieu de 250 Ko.
+
+Si vous oubliez cette étape, le site fonctionne quand même : il enverra
+simplement la photo en pleine résolution à tout le monde, donc plus lentement.
+
+*(Prérequis, une seule fois : `pip install Pillow`.)*
+
 ## Où va quoi
 
 | Dossier                    | Contenu                              | Format conseillé            |

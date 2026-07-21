@@ -1,34 +1,37 @@
 @import 'tailwindcss';
 
 /* ──────────────────────────────────────────────────────────────
-   Identité visuelle HIS — noir · bleu · orange
+   Identité visuelle HIS — bleu marine · rouge · blanc
+   Teintes relevées directement sur la charte : marine #001e42,
+   rouge vif #d80612, rouge profond #b41218.
    ────────────────────────────────────────────────────────────── */
 @theme {
-  --color-navy-50: #eef4fd;
-  --color-navy-100: #d7e4f8;
-  --color-navy-200: #adc7f0;
-  --color-navy-300: #7ba3e4;
-  --color-navy-400: #4a7bd2;
-  --color-navy-500: #2559b4;
-  --color-navy-600: #1a4491;
-  --color-navy-700: #133672;
-  --color-navy-800: #0e2755;
-  --color-navy-900: #0a1c3d;
-  --color-navy-950: #051026;
+  --color-navy-50: #eef3fb;
+  --color-navy-100: #d8e3f3;
+  --color-navy-200: #b0c6e5;
+  --color-navy-300: #7d9fd2;
+  --color-navy-400: #4b76bb;
+  --color-navy-500: #2755a1;
+  --color-navy-600: #184084;
+  --color-navy-700: #0e3068;
+  --color-navy-800: #062350;
+  --color-navy-900: #001e42;
+  --color-navy-950: #00122a;
 
-  --color-flame-50: #fff5ed;
-  --color-flame-100: #ffe7d3;
-  --color-flame-200: #ffcaa6;
-  --color-flame-300: #ffa56d;
-  --color-flame-400: #ff7d3a;
-  --color-flame-500: #f26522;
-  --color-flame-600: #dc4a10;
-  --color-flame-700: #b6360f;
-  --color-flame-800: #912d14;
-  --color-flame-900: #762814;
+  /* « flame » = le rouge HIS (protection incendie). */
+  --color-flame-50: #fef2f3;
+  --color-flame-100: #fde0e2;
+  --color-flame-200: #fbc5c8;
+  --color-flame-300: #f7959b;
+  --color-flame-400: #ef5a64;
+  --color-flame-500: #d80612;
+  --color-flame-600: #b41218;
+  --color-flame-700: #971015;
+  --color-flame-800: #7c1216;
+  --color-flame-900: #681417;
 
-  --color-ink: #0b0f16;
-  --color-ink-soft: #1a212c;
+  --color-ink: #05101f;
+  --color-ink-soft: #12213a;
 
   --font-sans:
     'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', 'Noto Sans', 'Noto Sans Arabic', 'Segoe UI Arabic',
@@ -104,7 +107,7 @@
     @apply py-16 sm:py-20 lg:py-24;
   }
 
-  /* Titre de section : sur-titre orange + titre. */
+  /* Titre de section : sur-titre rouge + titre. */
   .eyebrow {
     @apply mb-3 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.18em] text-flame-500;
   }
@@ -112,6 +115,22 @@
   .eyebrow::after {
     content: '';
     @apply h-px w-10 flex-none bg-flame-500/50;
+  }
+
+  /* Variante centrée : un filet rouge de chaque côté, comme sur la charte. */
+  .eyebrow-center::before {
+    content: '';
+    @apply h-px w-10 flex-none bg-flame-500/50;
+  }
+
+  /* Sur fond marine, le rouge vif manque de contraste : on l'éclaircit. */
+  .eyebrow-on-dark {
+    @apply text-flame-400;
+  }
+
+  .eyebrow-on-dark::before,
+  .eyebrow-on-dark::after {
+    @apply bg-flame-400/60;
   }
 
   .btn-primary {
@@ -133,6 +152,11 @@
 
   .card-hover {
     @apply card hover:-translate-y-1 hover:border-flame-200 hover:shadow-xl hover:shadow-navy-900/8;
+  }
+
+  /* Carte flottante blanche qui chevauche la section précédente (services phares). */
+  .card-float {
+    @apply rounded-2xl bg-white shadow-[0_24px_60px_-18px_rgb(0_30_66_/_0.45)] ring-1 ring-navy-900/5;
   }
 
   /* Trame technique discrète en fond de section sombre. */

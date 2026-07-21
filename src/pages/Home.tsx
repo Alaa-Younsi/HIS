@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { CtaBand } from '@/components/CtaBand';
 import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
 import { SectionHeading } from '@/components/Section';
@@ -13,6 +14,24 @@ import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { href } from '@/routes';
 import { PartnerStrip } from '@/components/PartnerStrip';
+import { Swoosh } from '@/components/Swoosh';
+
+/**
+ * Titre du hero avec le mot-clé en rouge, comme sur la charte.
+ * Si le mot n'apparaît pas dans le titre traduit, le titre s'affiche tel quel.
+ */
+function HeroTitle({ title, highlight }: { title: string; highlight: string }) {
+  const at = highlight ? title.toLowerCase().indexOf(highlight.toLowerCase()) : -1;
+  if (at === -1) return <>{title}</>;
+
+  return (
+    <>
+      {title.slice(0, at)}
+      <span className="text-flame-500">{title.slice(at, at + highlight.length)}</span>
+      {title.slice(at + highlight.length)}
+    </>
+  );
+}
 
 export function Home() {
   const { lang, t } = useLang();
@@ -34,7 +53,7 @@ export function Home() {
 
       {/* ── Hero ─────────────────────────────────────────────── */}
       <section className="relative overflow-hidden bg-navy-900">
-        <div className="absolute inset-0">
+        <div className="absolute inset-0" aria-hidden="true">
           <Img
             src="/images/hero-chantier.jpg"
             alt=""
@@ -43,23 +62,20 @@ export function Home() {
             fallbackIcon="factory"
             className="h-full w-full"
           />
-          <div
-            className="absolute inset-0 bg-gradient-to-r from-navy-950 via-navy-950/92 to-navy-950/45"
-            aria-hidden="true"
-          />
-          <div
-            className="absolute inset-0 bg-gradient-to-t from-navy-950 via-transparent to-transparent"
-            aria-hidden="true"
-          />
+          {/* Sous la courbe (mobile / tablette) : simple voile pour la lisibilité. */}
+          <div className="absolute inset-0 bg-gradient-to-b from-navy-950/95 via-navy-950/85 to-navy-950/95 lg:hidden" />
+          {/* À partir de lg : la courbe de marque remplace le voile.
+              `flip-rtl` la retourne en arabe, sinon le texte passerait sur la photo. */}
+          <Swoosh className="flip-rtl absolute inset-0 hidden h-full w-full lg:block" />
         </div>
 
-        <div className="container-his relative py-20 sm:py-28 lg:py-36">
-          <div className="max-w-2xl animate-rise">
-            <p className="eyebrow">{t(company.slogan)}</p>
-            <h1 className="text-4xl leading-[1.1] text-white sm:text-5xl lg:text-6xl">
-              {t(company.heroTitle)}
+        <div className="container-his relative py-20 sm:py-24 lg:py-32">
+          <div className="animate-rise max-w-xl lg:max-w-[44%]">
+            <p className="eyebrow eyebrow-on-dark">{t(company.slogan)}</p>
+            <h1 className="text-4xl uppercase leading-[1.08] text-white sm:text-5xl lg:text-[3.4rem]">
+              <HeroTitle title={t(company.heroTitle)} highlight={t(company.heroHighlight)} />
             </h1>
-            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">
+            <p className="mt-6 text-base leading-relaxed text-white/80 sm:text-lg">
               {t(company.heroSubtitle)}
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -73,25 +89,39 @@ export function Home() {
             </div>
           </div>
         </div>
+      </section>
 
-        {/* Bandeau des 4 services phares, chevauchant le hero */}
-        <div className="container-his relative pb-px">
-          <ul className="grid grid-cols-2 gap-px overflow-hidden rounded-t-xl bg-navy-100 lg:grid-cols-4">
+      {/* ── Services phares : carte blanche chevauchant le hero ── */}
+      {/* `flow-root` isole la marge négative de la carte : sans lui elle
+          remonterait la section entière et son fond viendrait teinter le hero. */}
+      <section className="relative flow-root bg-navy-50 pb-16 sm:pb-20 lg:pb-24">
+        <div className="container-his">
+          {/* Séparateurs en `outline` : ils suivent la grille à tous les
+              formats sans dépendre du rang de chaque case. */}
+          <ul className="card-float -mt-12 grid grid-cols-2 overflow-hidden lg:-mt-16 lg:grid-cols-4">
             {featuredServices.map((service) => (
-              <li key={service.slug}>
+              <li key={service.slug} className="relative outline outline-navy-100">
                 <Link
                   to={href(lang, 'services', service.slug)}
-                  className="group flex h-full flex-col items-center gap-2.5 bg-white px-4 py-7 text-center transition hover:bg-flame-50 sm:px-6"
+                  className="group flex h-full flex-col items-center gap-3 px-4 py-7 text-center sm:px-6 sm:py-8 lg:px-5"
                 >
-                  <Icon
-                    name={service.icon}
-                    size={34}
-                    className="text-navy-600 transition-transform duration-300 group-hover:scale-110 group-hover:text-flame-500"
+                  {/* Liseré rouge qui se révèle au survol */}
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-6 top-0 h-0.5 origin-center scale-x-0 bg-flame-500 transition-transform duration-300 ease-[var(--ease-out-soft)] group-hover:scale-x-100"
                   />
-                  <span className="text-sm font-bold text-navy-900 sm:text-base">
+                  <span className="grid h-14 w-14 flex-none place-items-center rounded-xl bg-navy-50 text-navy-700 transition duration-300 group-hover:bg-flame-500 group-hover:text-white">
+                    <Icon name={service.icon} size={28} />
+                  </span>
+                  <span className="text-[0.95rem] font-bold leading-snug text-navy-900 transition-colors group-hover:text-flame-600">
                     {t(service.title)}
                   </span>
-                  <span className="text-xs leading-relaxed text-navy-900/55">{t(service.short)}</span>
+                  <span className="text-xs leading-relaxed text-navy-900/70">
+                    {t(service.short)}
+                  </span>
+                  <span className="mt-auto pt-3 text-flame-500 opacity-0 transition duration-300 group-hover:opacity-100">
+                    <Icon name="arrow" size={16} className="flip-rtl" />
+                  </span>
                 </Link>
               </li>
             ))}
@@ -100,7 +130,7 @@ export function Home() {
       </section>
 
       {/* ── Engagement + chiffres clés ───────────────────────── */}
-      <section className="section bg-navy-50/60">
+      <section className="section bg-navy-50">
         <div className="container-his grid gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] lg:items-center lg:gap-16">
           <div>
             <SectionHeading
@@ -126,7 +156,7 @@ export function Home() {
               >
                 <Icon name={stat.icon} size={30} className="text-flame-500" />
                 <span className="text-3xl font-extrabold text-navy-900">{stat.value}</span>
-                <span className="text-xs leading-snug text-navy-900/60">{t(stat.label)}</span>
+                <span className="text-xs leading-snug text-navy-900/70">{t(stat.label)}</span>
               </li>
             ))}
           </ul>
@@ -159,7 +189,7 @@ export function Home() {
                     alt={t(service.title)}
                     ratio="16/10"
                     fallbackIcon={service.icon}
-                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    sizes="(min-width: 1240px) 372px, (min-width: 1024px) 31vw, (min-width: 640px) 47vw, 92vw"
                     imgClassName="transition-transform duration-500 group-hover:scale-105"
                   />
                   <div className="flex flex-1 flex-col p-6">
@@ -189,7 +219,7 @@ export function Home() {
       </section>
 
       {/* ── Réalisations ─────────────────────────────────────── */}
-      <section className="section bg-navy-950">
+      <section className="section">
         <div className="container-his">
           <SectionHeading
             eyebrow={{ fr: 'Sur le terrain', en: 'On site', ar: 'في الميدان' }}
@@ -200,38 +230,38 @@ export function Home() {
               ar: 'بعض الورشات الأخيرة التي أنجزتها فرقنا.',
             }}
             align="center"
-            tone="light"
           />
 
-          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredProjects.map((project, index) => (
-              <li
-                key={project.id}
-                className={index === 0 ? 'sm:col-span-2 sm:row-span-2' : undefined}
-              >
+          {/* Bandeau de vignettes — 5 de front sur grand écran, comme la charte. */}
+          <ul className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+            {featuredProjects.map((project) => (
+              <li key={project.id}>
                 <Link
                   to={href(lang, 'projects')}
-                  className="group relative block h-full overflow-hidden rounded-xl"
+                  className="group block overflow-hidden rounded-xl shadow-md shadow-navy-900/10 ring-1 ring-navy-900/5 transition duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-1 hover:shadow-xl hover:shadow-navy-900/20"
                 >
-                  <Img
-                    src={project.image}
-                    alt={t(project.title)}
-                    ratio={index === 0 ? '4/3' : '4/3'}
-                    fallbackIcon="fire"
-                    sizes="(min-width: 1024px) 33vw, 100vw"
-                    className="h-full"
-                    imgClassName="transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div
-                    className="absolute inset-0 bg-gradient-to-t from-ink via-ink/35 to-transparent opacity-85 transition group-hover:opacity-95"
-                    aria-hidden="true"
-                  />
-                  <div className="absolute inset-x-0 bottom-0 p-5">
-                    <p className="text-sm font-bold text-white sm:text-base">{t(project.title)}</p>
-                    <p className="mt-1 text-xs text-white/65">
-                      {t(project.location)}
-                      {project.year && ` · ${project.year}`}
-                    </p>
+                  <div className="relative">
+                    <Img
+                      src={project.image}
+                      alt={t(project.title)}
+                      ratio="4/3"
+                      fallbackIcon="fire"
+                      sizes="(min-width: 1240px) 220px, (min-width: 1024px) 18vw, (min-width: 640px) 30vw, 45vw"
+                      imgClassName="transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div
+                      className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/25 to-transparent opacity-80 transition group-hover:opacity-95"
+                      aria-hidden="true"
+                    />
+                    <div className="absolute inset-x-0 bottom-0 p-3.5">
+                      <p className="text-xs font-bold leading-snug text-white sm:text-sm">
+                        {t(project.title)}
+                      </p>
+                      <p className="mt-1 text-[11px] text-white/70">
+                        {t(project.location)}
+                        {project.year && ` · ${project.year}`}
+                      </p>
+                    </div>
                   </div>
                 </Link>
               </li>
@@ -277,7 +307,7 @@ export function Home() {
       </section>
 
       {/* ── Pourquoi HIS ─────────────────────────────────────── */}
-      <section className="section bg-navy-50/60">
+      <section className="section bg-navy-50">
         <div className="container-his">
           <SectionHeading
             eyebrow={{ fr: 'Nos atouts', en: 'Our strengths', ar: 'نقاط قوتنا' }}
@@ -319,12 +349,14 @@ export function Home() {
           />
           <PartnerStrip partners={clients} className="mt-10" />
 
-          <h3 className="mt-16 text-center text-sm font-bold uppercase tracking-[0.18em] text-navy-900/45">
+          <h3 className="mt-16 text-center text-sm font-bold uppercase tracking-[0.18em] text-navy-900/70">
             {t(ui.sections.suppliers)}
           </h3>
           <PartnerStrip partners={suppliers} className="mt-6" compact />
         </div>
       </section>
+
+      <CtaBand />
     </>
   );
 }

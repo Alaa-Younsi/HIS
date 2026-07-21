@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { company } from '@/content/company';
 import { useLang } from '@/i18n/LanguageProvider';
 import { href } from '@/routes';
 
@@ -39,11 +38,10 @@ export function Logo({ variant = 'dark' }: { variant?: 'dark' | 'light' }) {
   const isLight = variant === 'light';
 
   return (
-    <Link
-      to={href(lang, 'home')}
-      className="group flex items-center gap-3 rounded-md"
-      aria-label={`${company.legalName} — ${company.fullName}`}
-    >
+    // Pas d'aria-label ici : le texte du lien (« HIS · HVAC and Industrial
+    // Solution Algeria ») nomme déjà correctement la cible, et un aria-label
+    // différent du texte visible casse la commande vocale.
+    <Link to={href(lang, 'home')} className="group flex items-center gap-3 rounded-md">
       <Mark />
       <span className="flex flex-col leading-none">
         <span

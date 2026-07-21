@@ -64,7 +64,7 @@ export function About() {
               {company.stats.map((stat) => (
                 <li key={stat.value} className="bg-white px-4 py-6 text-center">
                   <p className="text-2xl font-extrabold text-flame-500">{stat.value}</p>
-                  <p className="mt-1 text-xs leading-snug text-navy-900/60">{t(stat.label)}</p>
+                  <p className="mt-1 text-xs leading-snug text-navy-900/70">{t(stat.label)}</p>
                 </li>
               ))}
             </ul>
