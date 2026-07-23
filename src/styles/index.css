@@ -90,7 +90,7 @@
 @utility btn {
   @apply inline-flex items-center justify-center gap-2 rounded-md px-6 py-3.5 text-sm font-bold uppercase
     tracking-wider transition duration-200 ease-[var(--ease-out-soft)]
-    active:translate-y-px;
+    hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.96] active:duration-75;
 }
 
 @utility card {
@@ -135,11 +135,11 @@
 
   .btn-primary {
     @apply btn bg-flame-500 text-white shadow-lg shadow-flame-500/25
-      hover:bg-flame-600 hover:shadow-xl hover:shadow-flame-500/30;
+      hover:bg-flame-600 hover:shadow-2xl hover:shadow-flame-500/40;
   }
 
   .btn-navy {
-    @apply btn bg-navy-800 text-white hover:bg-navy-700;
+    @apply btn bg-navy-800 text-white hover:bg-navy-700 hover:shadow-lg hover:shadow-navy-900/30;
   }
 
   .btn-outline {
@@ -150,8 +150,20 @@
     @apply btn border-2 border-navy-800/20 text-navy-800 hover:border-navy-800/40 hover:bg-navy-50;
   }
 
+  /* Carte avec relief 3D léger au survol : la photo/le contenu semble
+     s'incliner vers le curseur au lieu d'un simple décalage vertical. */
   .card-hover {
-    @apply card hover:-translate-y-1 hover:border-flame-200 hover:shadow-xl hover:shadow-navy-900/8;
+    @apply card hover:border-flame-200 hover:shadow-xl hover:shadow-navy-900/10 active:scale-[0.98];
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  .card-hover:hover {
+    transform: perspective(1000px) rotateX(2.5deg) rotateY(-2.5deg) translateY(-6px);
+  }
+
+  [dir='rtl'] .card-hover:hover {
+    transform: perspective(1000px) rotateX(2.5deg) rotateY(2.5deg) translateY(-6px);
   }
 
   /* Carte flottante blanche qui chevauche la section précédente (services phares). */
@@ -165,6 +177,18 @@
       linear-gradient(to right, rgb(255 255 255 / 0.045) 1px, transparent 1px),
       linear-gradient(to bottom, rgb(255 255 255 / 0.045) 1px, transparent 1px);
     background-size: 56px 56px;
+  }
+
+  /* Carte à inclinaison 3D pilotée par la souris (voir TiltCard.tsx). */
+  .tilt-card {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 0.4s var(--ease-out-soft);
+  }
+
+  /* Badge flottant vitré, posé sur la photo du hero. */
+  .glass-badge {
+    @apply rounded-xl border border-white/15 bg-white/10 shadow-2xl shadow-navy-950/40 backdrop-blur-md;
   }
 }
 
@@ -187,6 +211,39 @@
     to {
       opacity: 1;
       transform: none;
+    }
+  }
+
+  /* Apparition au scroll (voir Reveal.tsx) : masqué puis fondu + glissement. */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition:
+      opacity 0.7s var(--ease-out-soft),
+      transform 0.7s var(--ease-out-soft);
+  }
+
+  .reveal-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Flottement discret des halos et badges du hero. */
+  .float-slow {
+    animation: float-y 7s ease-in-out infinite;
+  }
+
+  .float-slower {
+    animation: float-y 9.5s ease-in-out infinite 1.2s;
+  }
+
+  @keyframes float-y {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-16px);
     }
   }
 }

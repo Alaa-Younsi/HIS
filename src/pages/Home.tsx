@@ -15,6 +15,8 @@ import { ui } from '@/i18n/ui';
 import { href } from '@/routes';
 import { PartnerStrip } from '@/components/PartnerStrip';
 import { Swoosh } from '@/components/Swoosh';
+import { Reveal } from '@/components/Reveal';
+import { TiltCard } from '@/components/TiltCard';
 
 /**
  * Titre du hero avec le mot-clé en rouge, comme sur la charte.
@@ -52,7 +54,10 @@ export function Home() {
       />
 
       {/* ── Hero ─────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-navy-900">
+      {/* min-h calé sur (viewport − header) + flex items-center : le contenu
+          est toujours centré verticalement et les boutons restent visibles
+          sans scroll, quelle que soit la hauteur d'écran. */}
+      <section className="relative flex min-h-[calc(100svh-4.5rem)] items-center overflow-hidden bg-navy-900 lg:min-h-[calc(100svh-7rem)]">
         <div className="absolute inset-0" aria-hidden="true">
           <Img
             src="/images/hero-chantier.jpg"
@@ -67,9 +72,17 @@ export function Home() {
           {/* À partir de lg : la courbe de marque remplace le voile.
               `flip-rtl` la retourne en arabe, sinon le texte passerait sur la photo. */}
           <Swoosh className="flip-rtl absolute inset-0 hidden h-full w-full lg:block" />
+
+          {/* Halos flottants — profondeur derrière le texte */}
+          <div className="float-slow absolute -start-24 top-1/4 h-72 w-72 rounded-full bg-flame-500/20 blur-3xl" />
+          <div className="float-slower absolute end-[8%] top-[12%] hidden h-56 w-56 rounded-full bg-white/10 blur-3xl lg:block" />
         </div>
 
-        <div className="container-his relative py-20 sm:py-24 lg:py-32">
+        {/* pb plus généreux que pt : la carte blanche qui suit chevauche le
+            hero via une marge négative (voir `-mt-12 lg:-mt-16` plus bas) —
+            il faut garder de la marge sous les boutons pour qu'elle ne les
+            recouvre jamais, même sur un écran bas. */}
+        <div className="container-his relative pb-24 pt-16 sm:pb-28 sm:pt-20 lg:pb-32 lg:pt-14">
           <div className="animate-rise max-w-xl lg:max-w-[44%]">
             <p className="eyebrow eyebrow-on-dark">{t(company.slogan)}</p>
             <h1 className="text-4xl uppercase leading-[1.08] text-white sm:text-5xl lg:text-[3.4rem]">
@@ -89,6 +102,40 @@ export function Home() {
             </div>
           </div>
         </div>
+
+        {/* Badges flottants — effet de profondeur au-dessus de la photo */}
+        <div className="pointer-events-none absolute inset-0 hidden lg:block" aria-hidden="true">
+          <div className="float-slow pointer-events-auto absolute bottom-[14%] end-[9%]">
+            <TiltCard strength={10} className="glass-badge flex items-center gap-3 px-5 py-4">
+              <span className="grid h-11 w-11 flex-none place-items-center rounded-lg bg-flame-500 text-white">
+                <Icon name="experience" size={22} />
+              </span>
+              <div>
+                <p className="text-xl font-extrabold leading-none text-white">
+                  {company.stats[0].value}
+                </p>
+                <p className="mt-1 text-[11px] leading-snug text-white/70">
+                  {t(company.stats[0].label)}
+                </p>
+              </div>
+            </TiltCard>
+          </div>
+          <div className="float-slower pointer-events-auto absolute end-[26%] top-[18%]">
+            <TiltCard strength={10} className="glass-badge flex items-center gap-3 px-5 py-4">
+              <span className="grid h-11 w-11 flex-none place-items-center rounded-lg bg-navy-700 text-white">
+                <Icon name="projects" size={22} />
+              </span>
+              <div>
+                <p className="text-xl font-extrabold leading-none text-white">
+                  {company.stats[1].value}
+                </p>
+                <p className="mt-1 text-[11px] leading-snug text-white/70">
+                  {t(company.stats[1].label)}
+                </p>
+              </div>
+            </TiltCard>
+          </div>
+        </div>
       </section>
 
       {/* ── Services phares : carte blanche chevauchant le hero ── */}
@@ -99,30 +146,34 @@ export function Home() {
           {/* Séparateurs en `outline` : ils suivent la grille à tous les
               formats sans dépendre du rang de chaque case. */}
           <ul className="card-float -mt-12 grid grid-cols-2 overflow-hidden lg:-mt-16 lg:grid-cols-4">
-            {featuredServices.map((service) => (
+            {featuredServices.map((service, index) => (
               <li key={service.slug} className="relative outline outline-navy-100">
-                <Link
-                  to={href(lang, 'services', service.slug)}
-                  className="group flex h-full flex-col items-center gap-3 px-4 py-7 text-center sm:px-6 sm:py-8 lg:px-5"
-                >
-                  {/* Liseré rouge qui se révèle au survol */}
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-x-6 top-0 h-0.5 origin-center scale-x-0 bg-flame-500 transition-transform duration-300 ease-[var(--ease-out-soft)] group-hover:scale-x-100"
-                  />
-                  <span className="grid h-14 w-14 flex-none place-items-center rounded-xl bg-navy-50 text-navy-700 transition duration-300 group-hover:bg-flame-500 group-hover:text-white">
-                    <Icon name={service.icon} size={28} />
-                  </span>
-                  <span className="text-[0.95rem] font-bold leading-snug text-navy-900 transition-colors group-hover:text-flame-600">
-                    {t(service.title)}
-                  </span>
-                  <span className="text-xs leading-relaxed text-navy-900/70">
-                    {t(service.short)}
-                  </span>
-                  <span className="mt-auto pt-3 text-flame-500 opacity-0 transition duration-300 group-hover:opacity-100">
-                    <Icon name="arrow" size={16} className="flip-rtl" />
-                  </span>
-                </Link>
+                <TiltCard strength={5} className="h-full">
+                  <Reveal delay={index * 80} className="h-full">
+                    <Link
+                      to={href(lang, 'services', service.slug)}
+                      className="group flex h-full flex-col items-center gap-3 px-4 py-7 text-center active:scale-[0.97] sm:px-6 sm:py-8 lg:px-5"
+                    >
+                      {/* Liseré rouge qui se révèle au survol */}
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-x-6 top-0 h-0.5 origin-center scale-x-0 bg-flame-500 transition-transform duration-300 ease-[var(--ease-out-soft)] group-hover:scale-x-100"
+                      />
+                      <span className="grid h-14 w-14 flex-none place-items-center rounded-xl bg-navy-50 text-navy-700 transition duration-300 group-hover:-translate-y-1 group-hover:rotate-6 group-hover:bg-flame-500 group-hover:text-white">
+                        <Icon name={service.icon} size={28} />
+                      </span>
+                      <span className="text-[0.95rem] font-bold leading-snug text-navy-900 transition-colors group-hover:text-flame-600">
+                        {t(service.title)}
+                      </span>
+                      <span className="text-xs leading-relaxed text-navy-900/70">
+                        {t(service.short)}
+                      </span>
+                      <span className="mt-auto pt-3 text-flame-500 opacity-0 transition duration-300 group-hover:opacity-100">
+                        <Icon name="arrow" size={16} className="flip-rtl" />
+                      </span>
+                    </Link>
+                  </Reveal>
+                </TiltCard>
               </li>
             ))}
           </ul>
@@ -149,15 +200,21 @@ export function Home() {
           </div>
 
           <ul className="grid grid-cols-2 gap-px overflow-hidden rounded-xl bg-navy-100 lg:grid-cols-4">
-            {company.stats.map((stat) => (
-              <li
+            {company.stats.map((stat, index) => (
+              <Reveal
+                as="li"
                 key={stat.value}
-                className="flex flex-col items-center gap-2 bg-white px-3 py-9 text-center"
+                delay={index * 90}
+                className="group flex flex-col items-center gap-2 bg-white px-3 py-9 text-center transition-colors duration-300 hover:bg-flame-50"
               >
-                <Icon name={stat.icon} size={30} className="text-flame-500" />
+                <Icon
+                  name={stat.icon}
+                  size={30}
+                  className="text-flame-500 transition-transform duration-300 group-hover:scale-110"
+                />
                 <span className="text-3xl font-extrabold text-navy-900">{stat.value}</span>
                 <span className="text-xs leading-snug text-navy-900/70">{t(stat.label)}</span>
-              </li>
+              </Reveal>
             ))}
           </ul>
         </div>
@@ -178,11 +235,11 @@ export function Home() {
           />
 
           <ul className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {services.map((service) => (
-              <li key={service.slug}>
+            {services.map((service, index) => (
+              <Reveal as="li" key={service.slug} delay={(index % 3) * 90}>
                 <Link
                   to={href(lang, 'services', service.slug)}
-                  className="card-hover group flex h-full flex-col overflow-hidden"
+                  className="card-hover group flex h-full flex-col overflow-hidden active:scale-[0.98]"
                 >
                   <Img
                     src={service.image}
@@ -194,7 +251,7 @@ export function Home() {
                   />
                   <div className="flex flex-1 flex-col p-6">
                     <div className="mb-3 flex items-center gap-3">
-                      <span className="grid h-10 w-10 flex-none place-items-center rounded-lg bg-navy-50 text-navy-600 transition group-hover:bg-flame-500 group-hover:text-white">
+                      <span className="grid h-10 w-10 flex-none place-items-center rounded-lg bg-navy-50 text-navy-600 transition group-hover:-translate-y-0.5 group-hover:bg-flame-500 group-hover:text-white">
                         <Icon name={service.icon} size={21} />
                       </span>
                       <h3 className="text-lg text-navy-900">{t(service.title)}</h3>
@@ -212,7 +269,7 @@ export function Home() {
                     </span>
                   </div>
                 </Link>
-              </li>
+              </Reveal>
             ))}
           </ul>
         </div>
@@ -234,37 +291,39 @@ export function Home() {
 
           {/* Bandeau de vignettes — 5 de front sur grand écran, comme la charte. */}
           <ul className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {featuredProjects.map((project) => (
-              <li key={project.id}>
-                <Link
-                  to={href(lang, 'projects')}
-                  className="group block overflow-hidden rounded-xl shadow-md shadow-navy-900/10 ring-1 ring-navy-900/5 transition duration-300 ease-[var(--ease-out-soft)] hover:-translate-y-1 hover:shadow-xl hover:shadow-navy-900/20"
-                >
-                  <div className="relative">
-                    <Img
-                      src={project.image}
-                      alt={t(project.title)}
-                      ratio="4/3"
-                      fallbackIcon="fire"
-                      sizes="(min-width: 1240px) 220px, (min-width: 1024px) 18vw, (min-width: 640px) 30vw, 45vw"
-                      imgClassName="transition-transform duration-700 group-hover:scale-110"
-                    />
-                    <div
-                      className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/25 to-transparent opacity-80 transition group-hover:opacity-95"
-                      aria-hidden="true"
-                    />
-                    <div className="absolute inset-x-0 bottom-0 p-3.5">
-                      <p className="text-xs font-bold leading-snug text-white sm:text-sm">
-                        {t(project.title)}
-                      </p>
-                      <p className="mt-1 text-[11px] text-white/70">
-                        {t(project.location)}
-                        {project.year && ` · ${project.year}`}
-                      </p>
+            {featuredProjects.map((project, index) => (
+              <Reveal as="li" key={project.id} delay={(index % 5) * 70}>
+                <TiltCard strength={6}>
+                  <Link
+                    to={href(lang, 'projects')}
+                    className="group block overflow-hidden rounded-xl shadow-md shadow-navy-900/10 ring-1 ring-navy-900/5 transition-shadow duration-300 ease-[var(--ease-out-soft)] hover:shadow-xl hover:shadow-navy-900/20 active:scale-[0.97]"
+                  >
+                    <div className="relative">
+                      <Img
+                        src={project.image}
+                        alt={t(project.title)}
+                        ratio="4/3"
+                        fallbackIcon="fire"
+                        sizes="(min-width: 1240px) 220px, (min-width: 1024px) 18vw, (min-width: 640px) 30vw, 45vw"
+                        imgClassName="transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div
+                        className="absolute inset-0 bg-gradient-to-t from-navy-950 via-navy-950/25 to-transparent opacity-80 transition group-hover:opacity-95"
+                        aria-hidden="true"
+                      />
+                      <div className="absolute inset-x-0 bottom-0 p-3.5">
+                        <p className="text-xs font-bold leading-snug text-white sm:text-sm">
+                          {t(project.title)}
+                        </p>
+                        <p className="mt-1 text-[11px] text-white/70">
+                          {t(project.location)}
+                          {project.year && ` · ${project.year}`}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              </li>
+                  </Link>
+                </TiltCard>
+              </Reveal>
             ))}
           </ul>
 
@@ -286,16 +345,22 @@ export function Home() {
             align="center"
           />
           <ul className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-            {sectors.map((sector) => (
-              <li
+            {sectors.map((sector, index) => (
+              <Reveal
+                as="li"
                 key={sector.id}
-                className="card flex flex-col items-center gap-3 px-4 py-7 text-center hover:border-flame-200 hover:shadow-lg hover:shadow-navy-900/5"
+                delay={(index % 5) * 70}
+                className="card group flex flex-col items-center gap-3 px-4 py-7 text-center hover:border-flame-200 hover:shadow-lg hover:shadow-navy-900/5"
               >
-                <Icon name={sector.icon} size={30} className="text-flame-500" />
+                <Icon
+                  name={sector.icon}
+                  size={30}
+                  className="text-flame-500 transition-transform duration-300 group-hover:-translate-y-1 group-hover:scale-110"
+                />
                 <span className="text-sm font-semibold leading-snug text-navy-900">
                   {t(sector.name)}
                 </span>
-              </li>
+              </Reveal>
             ))}
           </ul>
           <div className="mt-8 text-center">
@@ -315,9 +380,14 @@ export function Home() {
             align="center"
           />
           <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {strengths.slice(0, 6).map((strength) => (
-              <li key={strength.id} className="card flex gap-4 bg-white p-6">
-                <span className="grid h-11 w-11 flex-none place-items-center rounded-lg bg-flame-50 text-flame-600">
+            {strengths.slice(0, 6).map((strength, index) => (
+              <Reveal
+                as="li"
+                key={strength.id}
+                delay={(index % 3) * 90}
+                className="card group flex gap-4 bg-white p-6 hover:border-flame-200 hover:shadow-lg hover:shadow-navy-900/5"
+              >
+                <span className="grid h-11 w-11 flex-none place-items-center rounded-lg bg-flame-50 text-flame-600 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110">
                   <Icon name={strength.icon} size={22} />
                 </span>
                 <div>
@@ -326,7 +396,7 @@ export function Home() {
                     {t(strength.description)}
                   </p>
                 </div>
-              </li>
+              </Reveal>
             ))}
           </ul>
           <div className="mt-9 text-center">
