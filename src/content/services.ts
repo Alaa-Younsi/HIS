@@ -7,6 +7,8 @@ export type Service = {
   icon: IconName;
   /** Déposez le fichier dans public/images/services/. Un visuel de repli s'affiche si absent. */
   image: string;
+  /** Photos de chantier supplémentaires, affichées en galerie sur la page du service. */
+  gallery?: readonly string[];
   title: Localized;
   short: Localized;
   description: Localized;
@@ -24,6 +26,7 @@ export const services: readonly Service[] = [
     slug: 'climatisation',
     icon: 'snowflake',
     image: '/images/services/climatisation.jpg',
+    gallery: ['/images/services/gallery/climatisation-groupe-unique.jpg'],
     title: { fr: 'Climatisation HVAC', en: 'HVAC Air Conditioning', ar: 'التكييف الهوائي' },
     short: {
       fr: 'Solutions pour tous types de bâtiments',
@@ -45,6 +48,17 @@ export const services: readonly Service[] = [
     slug: 'ventilation',
     icon: 'wind',
     image: '/images/services/ventilation.jpg',
+    gallery: [
+      '/images/services/gallery/ventilation-ensemble-chantier.jpg',
+      '/images/services/gallery/ventilation-duct-run-jour.jpg',
+      '/images/services/gallery/ventilation-ventilateur-face.jpg',
+      '/images/services/gallery/ventilation-ventilateur-profil.jpg',
+      '/images/services/gallery/ventilation-duct-run-nuit.jpg',
+      '/images/services/gallery/ventilation-duct-perspective.jpg',
+      '/images/services/gallery/ventilation-ensemble-chantier-alt.jpg',
+      '/images/services/gallery/ventilation-ventilateur-face-alt.jpg',
+      '/images/services/gallery/ventilation-duct-run-nuit-bis.jpg',
+    ],
     title: { fr: 'Ventilation', en: 'Ventilation', ar: 'التهوية' },
     short: {
       fr: 'Air sain, environnement maîtrisé',
@@ -87,6 +101,7 @@ export const services: readonly Service[] = [
     slug: 'protection-incendie',
     icon: 'fire',
     image: '/images/services/protection-incendie.jpg',
+    gallery: ['/images/services/gallery/protection-incendie-livraison.jpg'],
     title: {
       fr: "Protection et lutte contre l'incendie",
       en: 'Fire Protection & Firefighting',
@@ -219,8 +234,3 @@ export const services: readonly Service[] = [
   },
 ];
 
-export const getService = (slug: string | undefined): Service | undefined =>
-  services.find((service) => service.slug === slug);
-
-/** Services mis en avant sur la page d'accueil. */
-export const featuredServices = services.slice(0, 4);

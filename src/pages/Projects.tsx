@@ -4,7 +4,8 @@ import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
 import { PageHero } from '@/components/Section';
 import { Seo } from '@/components/Seo';
-import { projectCategories, projects, type ProjectCategory } from '@/content/projects';
+import { projectCategories, type ProjectCategory } from '@/content/projects';
+import { useProjects } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 
@@ -12,17 +13,18 @@ type Filter = ProjectCategory | 'all';
 
 export function Projects() {
   const { t } = useLang();
+  const projects = useProjects();
   const [filter, setFilter] = useState<Filter>('all');
 
   const visible = useMemo(
     () => (filter === 'all' ? projects : projects.filter((project) => project.category === filter)),
-    [filter],
+    [filter, projects],
   );
 
   // N'affiche que les catégories qui contiennent au moins une réalisation.
   const availableCategories = useMemo(
     () => projectCategories.filter((category) => projects.some((p) => p.category === category.id)),
-    [],
+    [projects],
   );
 
   return (

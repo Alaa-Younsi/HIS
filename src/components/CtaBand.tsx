@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { company, telUrl } from '@/content/company';
+import { telUrl } from '@/content/company';
+import { useCompanyInfo } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { href } from '@/routes';
@@ -9,6 +10,7 @@ import { Reveal } from './Reveal';
 /** Bloc d'appel à l'action réutilisé en bas des pages intérieures. */
 export function CtaBand() {
   const { lang, t } = useLang();
+  const company = useCompanyInfo();
 
   return (
     <section className="relative overflow-hidden bg-flame-600">
@@ -31,7 +33,7 @@ export function CtaBand() {
             {t(ui.cta.quote)}
             <Icon name="arrow" size={17} className="flip-rtl" />
           </Link>
-          <a href={telUrl(company.contact.phones[0])} className="btn-outline" dir="ltr">
+          <a href={telUrl(company.contact.phones[0] ?? '')} className="btn-outline" dir="ltr">
             <Icon name="phone" size={17} />
             {company.contact.phones[0]}
           </a>

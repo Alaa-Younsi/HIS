@@ -3,9 +3,12 @@ import { Icon } from '@/components/Icon';
 import { PageHero } from '@/components/Section';
 import { Seo } from '@/components/Seo';
 import { company, telUrl, whatsappUrl } from '@/content/company';
-import { services } from '@/content/services';
+import { useCompanyInfo, useServices } from '@/hooks/useContent';
+import { useHoneypot } from '@/hooks/useHoneypot';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
+import { leadErrorMessage } from '@/lib/leadErrors';
+import { submitLead } from '@/lib/leads';
 import type { Localized } from '@/i18n/types';
 
 const form = {
@@ -32,13 +35,21 @@ const form = {
 
 export function Contact() {
   const { lang, t } = useLang();
+  const companyInfo = useCompanyInfo();
+  const services = useServices();
+  const { isSpam } = useHoneypot();
   const [fields, setFields] = useState({
     name: '',
     organisation: '',
     phone: '',
     service: '',
     message: '',
+    // Champ piège : jamais rempli par un visiteur humain (masqué visuellement,
+    // pas avec display:none — un lecteur d'écran ou un bot un peu plus soigné
+    // l'ignorerait sinon différemment).
+    website: '',
   });
+  const [leadNotice, setLeadNotice] = useState<Localized | null>(null);
 
   const update = (key: keyof typeof fields) => (event: { target: { value: string } }) =>
     setFields((current) => ({ ...current, [key]: event.target.value }));
@@ -56,16 +67,40 @@ export function Contact() {
     return lines.join('\n');
   };
 
+  /**
+   * Best-effort : enregistre la demande dans le tableau de bord si Supabase
+   * est connecté. N'empêche jamais l'ouverture de WhatsApp/l'e-mail en cas
+   * d'échec — c'est un enregistrement supplémentaire, pas le chemin garanti.
+   */
+  const recordLead = async () => {
+    if (isSpam(fields.website)) return;
+    try {
+      await submitLead({
+        kind: fields.service ? 'devis' : 'contact',
+        name: fields.name,
+        organisation: fields.organisation,
+        phone: fields.phone,
+        serviceSlug: services.find((service) => t(service.title) === fields.service)?.slug ?? '',
+        message: fields.message,
+        lang,
+      });
+      setLeadNotice(null);
+    } catch (error) {
+      setLeadNotice(leadErrorMessage(error));
+    }
+  };
+
   const submit = (channel: 'whatsapp' | 'mail') => (event: FormEvent) => {
     event.preventDefault();
+    void recordLead();
     const summary = buildSummary();
 
     if (channel === 'whatsapp') {
-      window.open(whatsappUrl(summary), '_blank', 'noopener,noreferrer');
+      window.open(whatsappUrl(companyInfo.contact.whatsapp, summary), '_blank', 'noopener,noreferrer');
       return;
     }
     const subject = `${t(form.title)} — ${fields.name}`;
-    window.location.href = `mailto:${company.contact.email}?subject=${encodeURIComponent(
+    window.location.href = `mailto:${companyInfo.contact.email}?subject=${encodeURIComponent(
       subject,
     )}&body=${encodeURIComponent(summary)}`;
   };
@@ -102,12 +137,12 @@ export function Contact() {
           {/* Coordonnées */}
           <div className="space-y-4">
             <ContactCard icon="pin" label={t(ui.labels.address)}>
-              <address className="not-italic leading-relaxed">{t(company.contact.address)}</address>
+              <address className="not-italic leading-relaxed">{t(companyInfo.contact.address)}</address>
             </ContactCard>
 
             <ContactCard icon="phone" label={t(ui.labels.phone)}>
               <div className="flex flex-col gap-1" dir="ltr">
-                {company.contact.phones.map((phone) => (
+                {companyInfo.contact.phones.map((phone) => (
                   <a
                     key={phone}
                     href={telUrl(phone)}
@@ -121,19 +156,19 @@ export function Contact() {
 
             <ContactCard icon="mail" label={t(ui.labels.emailLabel)}>
               <a
-                href={`mailto:${company.contact.email}`}
+                href={`mailto:${companyInfo.contact.email}`}
                 className="break-all font-semibold transition hover:text-flame-600"
               >
-                {company.contact.email}
+                {companyInfo.contact.email}
               </a>
             </ContactCard>
 
             <ContactCard icon="clock" label={t(ui.labels.hours)}>
-              {t(company.contact.hours)}
+              {t(companyInfo.contact.hours)}
             </ContactCard>
 
             <a
-              href={whatsappUrl(t(company.whatsappMessage))}
+              href={whatsappUrl(companyInfo.contact.whatsapp, t(companyInfo.whatsappMessage))}
               target="_blank"
               rel="noreferrer noopener"
               className="btn w-full bg-[#25D366] text-white hover:bg-[#1EBE5A]"
@@ -149,6 +184,18 @@ export function Contact() {
             <p className="mt-2 text-sm leading-relaxed text-navy-900/65">{t(form.intro)}</p>
 
             <form onSubmit={submit('whatsapp')} className="mt-7 space-y-5">
+              {/* Piège anti-spam : un champ qu'un visiteur humain ne peut pas voir ni atteindre au clavier. */}
+              <input
+                type="text"
+                name="website"
+                value={fields.website}
+                onChange={update('website')}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+                className="absolute -left-[9999px] h-0 w-0 opacity-0"
+              />
+
               <div className="grid gap-5 sm:grid-cols-2">
                 <Field label={t(form.name)} required>
                   <input
@@ -216,6 +263,12 @@ export function Contact() {
                   {t(form.sendMail)}
                 </button>
               </div>
+
+              {leadNotice && (
+                <p role="status" className="text-xs text-navy-900/60">
+                  {t(leadNotice)}
+                </p>
+              )}
             </form>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { company } from '@/content/company';
+import { company, type Company } from '@/content/company';
 import { useLang } from '@/i18n/LanguageProvider';
 import { LANG_META, LANGS, type Localized } from '@/i18n/types';
 import { swapLangInPath } from '@/routes';
@@ -19,14 +19,24 @@ type SeoProps = {
  * Métadonnées de page. React 19 remonte automatiquement <title>, <meta>
  * et <link> dans le <head> du document, sans librairie externe.
  */
-export function Seo({ title, description, image = '/og-image.jpg', jsonLd, noindex = false }: SeoProps) {
+export function Seo({ title, description, image, jsonLd, noindex = false }: SeoProps) {
   const { lang, t } = useLang();
   const { pathname } = useLocation();
 
   const pageTitle = `${t(title)} | ${company.legalName}`;
   const pageDescription = t(description);
   const canonical = `${company.siteUrl}${pathname}`;
-  const imageUrl = `${company.siteUrl}${image}`;
+  // Une image de page (ex. la photo d'un service) n'a pas forcément le format
+  // 1200×630 du visuel de partage par défaut : on ne déclare og:image:width/
+  // height que pour ce dernier, jamais pour une image dont on ne connaît pas
+  // les dimensions réelles.
+  const usingDefaultImage = !image;
+  // Une photo de service peut venir de Supabase Storage (URL absolue,
+  // https://<projet>.supabase.co/...) une fois modifiée depuis le tableau de
+  // bord, plutôt que d'un chemin local /images/... — ne préfixer par
+  // siteUrl que dans ce second cas.
+  const resolvedImage = image ?? '/og-image.jpg';
+  const imageUrl = resolvedImage.startsWith('http') ? resolvedImage : `${company.siteUrl}${resolvedImage}`;
 
   return (
     <>
@@ -52,6 +62,13 @@ export function Seo({ title, description, image = '/og-image.jpg', jsonLd, noind
       <meta property="og:description" content={pageDescription} />
       <meta property="og:url" content={canonical} />
       <meta property="og:image" content={imageUrl} />
+      {usingDefaultImage && (
+        <>
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+        </>
+      )}
+      <meta property="og:image:alt" content={pageTitle} />
       <meta property="og:locale" content={lang === 'ar' ? 'ar_DZ' : lang === 'en' ? 'en_US' : 'fr_DZ'} />
 
       <meta name="twitter:card" content="summary_large_image" />
@@ -70,30 +87,34 @@ export function Seo({ title, description, image = '/og-image.jpg', jsonLd, noind
   );
 }
 
-/** Fiche d'entreprise — injectée une fois, sur toutes les pages. */
-export function organizationJsonLd(lang: 'fr' | 'en' | 'ar') {
+/**
+ * Fiche d'entreprise — injectée une fois, sur toutes les pages.
+ * `info` vient de useCompanyInfo() (Layout.tsx) : reflète les coordonnées
+ * modifiées depuis le tableau de bord une fois Supabase connecté.
+ */
+export function organizationJsonLd(info: Company, lang: 'fr' | 'en' | 'ar') {
   return {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
     '@id': `${company.siteUrl}/#organization`,
     name: company.legalName,
     alternateName: company.fullName,
-    description: company.intro[lang],
+    description: info.intro[lang],
     url: company.siteUrl,
-    logo: `${company.siteUrl}/logo-his.svg`,
+    logo: `${company.siteUrl}/logo-his.png`,
     image: `${company.siteUrl}/og-image.jpg`,
-    email: company.contact.email,
-    telephone: company.contact.phones[0],
+    email: info.contact.email,
+    telephone: info.contact.phones[0],
     address: {
       '@type': 'PostalAddress',
       streetAddress: 'Haouch Ben Chergui SEC 09 GP13 N°38',
       addressLocality: "L'Arbaa",
-      addressRegion: company.contact.city,
-      addressCountry: company.contact.country,
+      addressRegion: info.contact.city,
+      addressCountry: info.contact.country,
     },
     areaServed: { '@type': 'Country', name: 'Algeria' },
-    sameAs: [company.contact.linkedin, company.contact.facebook].filter(Boolean),
-    slogan: company.slogan[lang],
+    sameAs: [info.contact.linkedin, info.contact.facebook].filter(Boolean),
+    slogan: info.slogan[lang],
   };
 }
 

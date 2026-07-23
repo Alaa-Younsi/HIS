@@ -3,7 +3,7 @@ import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
 import { Seo, breadcrumbJsonLd } from '@/components/Seo';
 import { company, telUrl, whatsappUrl } from '@/content/company';
-import { getService, services } from '@/content/services';
+import { useCompanyInfo, useServices } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { href } from '@/routes';
@@ -11,7 +11,9 @@ import { href } from '@/routes';
 export function ServiceDetail() {
   const { lang, t } = useLang();
   const { slug } = useParams();
-  const service = getService(slug);
+  const companyInfo = useCompanyInfo();
+  const services = useServices();
+  const service = services.find((item) => item.slug === slug);
 
   if (!service) return <Navigate to={href(lang, 'services')} replace />;
 
@@ -99,6 +101,24 @@ export function ServiceDetail() {
                 </li>
               ))}
             </ul>
+
+            {service.gallery && service.gallery.length > 0 && (
+              <>
+                <h2 className="mt-10 text-2xl text-navy-900">{t(ui.sections.gallery)}</h2>
+                <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {service.gallery.map((photo) => (
+                    <Img
+                      key={photo}
+                      src={photo}
+                      alt=""
+                      ratio="4/3"
+                      fallbackIcon={service.icon}
+                      className="rounded-lg"
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Encart contact */}
@@ -116,7 +136,7 @@ export function ServiceDetail() {
 
                 <div className="mt-6 space-y-3">
                   <a
-                    href={whatsappUrl(t(company.whatsappMessage))}
+                    href={whatsappUrl(companyInfo.contact.whatsapp, t(companyInfo.whatsappMessage))}
                     target="_blank"
                     rel="noreferrer noopener"
                     className="btn w-full bg-[#25D366] text-white hover:bg-[#1EBE5A]"
@@ -124,9 +144,9 @@ export function ServiceDetail() {
                     <Icon name="whatsapp" size={19} />
                     {t(ui.cta.whatsapp)}
                   </a>
-                  <a href={telUrl(company.contact.phones[0])} className="btn-primary w-full" dir="ltr">
+                  <a href={telUrl(companyInfo.contact.phones[0] ?? '')} className="btn-primary w-full" dir="ltr">
                     <Icon name="phone" size={17} />
-                    {company.contact.phones[0]}
+                    {companyInfo.contact.phones[0]}
                   </a>
                   <Link to={href(lang, 'contact')} className="btn-outline w-full">
                     {t(ui.cta.contact)}

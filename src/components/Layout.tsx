@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
+import { useCompanyInfo } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { Footer } from './Footer';
@@ -20,6 +21,7 @@ function ScrollToTop() {
 
 export function Layout() {
   const { lang, t } = useLang();
+  const companyInfo = useCompanyInfo();
 
   return (
     <>
@@ -28,7 +30,7 @@ export function Layout() {
       {/* Fiche d'entreprise structurée, présente sur toutes les pages. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd(lang)) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd(companyInfo, lang)) }}
       />
 
       <a

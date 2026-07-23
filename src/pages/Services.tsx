@@ -5,13 +5,14 @@ import { Img } from '@/components/Img';
 import { PageHero } from '@/components/Section';
 import { Seo } from '@/components/Seo';
 import { company } from '@/content/company';
-import { services } from '@/content/services';
+import { useServices } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { href } from '@/routes';
 
 export function Services() {
   const { lang, t } = useLang();
+  const services = useServices();
 
   return (
     <>

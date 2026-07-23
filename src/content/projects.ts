@@ -142,8 +142,3 @@ export const projects: readonly Project[] = [
   },
 ];
 
-export const projectsByCategory = (category: ProjectCategory | 'all'): readonly Project[] =>
-  category === 'all' ? projects : projects.filter((project) => project.category === category);
-
-/** Réalisations mises en avant sur la page d'accueil. */
-export const featuredProjects = projects.slice(0, 5);

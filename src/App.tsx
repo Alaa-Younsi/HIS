@@ -6,6 +6,8 @@ import { isLang } from '@/i18n/types';
 import { paths } from '@/routes';
 import { Home } from '@/pages/Home';
 
+const AdminApp = lazy(() => import('@/admin/AdminApp').then((m) => ({ default: m.AdminApp })));
+
 // La page d'accueil est dans le bundle initial ; le reste est chargé à la demande.
 const About = lazy(() => import('@/pages/About').then((m) => ({ default: m.About })));
 const Services = lazy(() => import('@/pages/Services').then((m) => ({ default: m.Services })));
@@ -49,6 +51,9 @@ export function App() {
     <Suspense fallback={<PageFallback />}>
       <Routes>
         <Route path="/" element={<RootRedirect />} />
+
+        {/* Hors préfixe de langue et hors Layout public — tableau de bord interne. */}
+        <Route path="/admin/*" element={<AdminApp />} />
 
         <Route path="/:lang" element={<LangLayout />}>
           <Route index element={<Home />} />

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { company, whatsappUrl } from '@/content/company';
+import { whatsappUrl } from '@/content/company';
+import { useCompanyInfo } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { Icon } from './Icon';
@@ -7,6 +8,7 @@ import { Icon } from './Icon';
 /** Bouton WhatsApp flottant — apparaît après un premier défilement. */
 export function WhatsAppButton() {
   const { t } = useLang();
+  const company = useCompanyInfo();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -18,7 +20,7 @@ export function WhatsAppButton() {
 
   return (
     <a
-      href={whatsappUrl(t(company.whatsappMessage))}
+      href={whatsappUrl(company.contact.whatsapp, t(company.whatsappMessage))}
       target="_blank"
       rel="noreferrer noopener"
       aria-label={t(ui.cta.whatsapp)}

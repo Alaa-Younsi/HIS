@@ -45,6 +45,7 @@ export const ui = {
     contact: { fr: 'Contactez-nous', en: 'Get in touch', ar: 'اتصل بنا' },
     applications: { fr: "Domaines d'application", en: 'Areas of application', ar: 'مجالات التطبيق' },
     otherServices: { fr: "D'autres services", en: 'Other services', ar: 'خدمات أخرى' },
+    gallery: { fr: 'Photos de chantier', en: 'Site photos', ar: 'صور من الورشة' },
   },
   labels: {
     address: { fr: 'Adresse', en: 'Address', ar: 'العنوان' },

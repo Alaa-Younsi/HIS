@@ -4,12 +4,7 @@ import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
 import { SectionHeading } from '@/components/Section';
 import { Seo } from '@/components/Seo';
-import { company } from '@/content/company';
-import { clients, clientsIntro, suppliers } from '@/content/partners';
-import { featuredProjects } from '@/content/projects';
-import { sectors } from '@/content/sectors';
-import { featuredServices, services } from '@/content/services';
-import { strengths } from '@/content/strengths';
+import { useCompanyInfo, usePartners, useProjects, useSectors, useServices, useStrengths } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { href } from '@/routes';
@@ -37,6 +32,22 @@ function HeroTitle({ title, highlight }: { title: string; highlight: string }) {
 
 export function Home() {
   const { lang, t } = useLang();
+  const company = useCompanyInfo();
+  const services = useServices();
+  const projects = useProjects();
+  const sectors = useSectors();
+  const strengths = useStrengths();
+  const { clients, suppliers, clientsIntro } = usePartners();
+
+  const featuredServices = services.slice(0, 4);
+  const featuredProjects = projects.slice(0, 5);
+
+  // Les deux badges flottants du hero pointent sur les deux premiers chiffres
+  // clés — un repli vide évite un crash si la liste est momentanément plus
+  // courte (ex. juste après une modification depuis le tableau de bord).
+  const emptyStat = { value: '', label: { fr: '', en: '', ar: '' } };
+  const heroStatA = company.stats[0] ?? emptyStat;
+  const heroStatB = company.stats[1] ?? emptyStat;
 
   return (
     <>
@@ -112,10 +123,10 @@ export function Home() {
               </span>
               <div>
                 <p className="text-xl font-extrabold leading-none text-white">
-                  {company.stats[0].value}
+                  {heroStatA.value}
                 </p>
                 <p className="mt-1 text-[11px] leading-snug text-white/70">
-                  {t(company.stats[0].label)}
+                  {t(heroStatA.label)}
                 </p>
               </div>
             </TiltCard>
@@ -127,10 +138,10 @@ export function Home() {
               </span>
               <div>
                 <p className="text-xl font-extrabold leading-none text-white">
-                  {company.stats[1].value}
+                  {heroStatB.value}
                 </p>
                 <p className="mt-1 text-[11px] leading-snug text-white/70">
-                  {t(company.stats[1].label)}
+                  {t(heroStatB.label)}
                 </p>
               </div>
             </TiltCard>

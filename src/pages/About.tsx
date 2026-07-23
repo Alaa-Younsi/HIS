@@ -3,20 +3,27 @@ import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
 import { PageHero, SectionHeading } from '@/components/Section';
 import { Seo } from '@/components/Seo';
-import { company } from '@/content/company';
+import { useCompanyInfo } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import type { IconName } from '@/components/Icon';
 import type { Localized } from '@/i18n/types';
+import type { Company } from '@/content/company';
 
-const pillars: readonly { id: string; icon: IconName; title: Localized; body: Localized }[] = [
-  { id: 'story', icon: 'crane', title: ui.sections.ourStory, body: company.story },
-  { id: 'mission', icon: 'shield', title: ui.sections.ourMission, body: company.mission },
-  { id: 'expertise', icon: 'medal', title: ui.sections.ourExpertise, body: company.expertise },
-];
+function buildPillars(
+  company: Company,
+): readonly { id: string; icon: IconName; title: Localized; body: Localized }[] {
+  return [
+    { id: 'story', icon: 'crane', title: ui.sections.ourStory, body: company.story },
+    { id: 'mission', icon: 'shield', title: ui.sections.ourMission, body: company.mission },
+    { id: 'expertise', icon: 'medal', title: ui.sections.ourExpertise, body: company.expertise },
+  ];
+}
 
 export function About() {
   const { t } = useLang();
+  const company = useCompanyInfo();
+  const pillars = buildPillars(company);
 
   return (
     <>

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { company, telUrl } from '@/content/company';
-import { services } from '@/content/services';
+import { useCompanyInfo, useServices } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { href, type PathKey } from '@/routes';
@@ -18,6 +18,8 @@ const footerNav: readonly { key: PathKey; label: keyof typeof ui.nav }[] = [
 
 export function Footer() {
   const { lang, t } = useLang();
+  const companyInfo = useCompanyInfo();
+  const services = useServices();
 
   return (
     <footer className="bg-ink text-white/70">
@@ -27,7 +29,7 @@ export function Footer() {
           <div className="flex items-center gap-4">
             <Icon name="shield" size={38} className="hidden flex-none text-white sm:block" />
             <p className="text-lg font-bold uppercase leading-snug tracking-wide text-white sm:text-xl">
-              {t(company.slogan)}
+              {t(companyInfo.slogan)}
             </p>
           </div>
           <Link
@@ -47,9 +49,9 @@ export function Footer() {
           </div>
           <p className="mt-5 max-w-sm text-sm leading-relaxed">{t(ui.footer.tagline)}</p>
           <div className="mt-5 flex items-center gap-3">
-            {company.contact.linkedin && (
+            {companyInfo.contact.linkedin && (
               <a
-                href={company.contact.linkedin}
+                href={companyInfo.contact.linkedin}
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label="LinkedIn"
@@ -58,9 +60,9 @@ export function Footer() {
                 <Icon name="linkedin" size={17} />
               </a>
             )}
-            {company.contact.facebook && (
+            {companyInfo.contact.facebook && (
               <a
-                href={company.contact.facebook}
+                href={companyInfo.contact.facebook}
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label="Facebook"
@@ -112,12 +114,12 @@ export function Footer() {
           <ul className="space-y-4 text-sm">
             <li className="flex gap-3">
               <Icon name="pin" size={18} className="mt-0.5 flex-none text-flame-500" />
-              <address className="not-italic leading-relaxed">{t(company.contact.address)}</address>
+              <address className="not-italic leading-relaxed">{t(companyInfo.contact.address)}</address>
             </li>
             <li className="flex gap-3">
               <Icon name="phone" size={18} className="mt-0.5 flex-none text-flame-500" />
               <div className="flex flex-col gap-1" dir="ltr">
-                {company.contact.phones.map((phone) => (
+                {companyInfo.contact.phones.map((phone) => (
                   <a key={phone} href={telUrl(phone)} className="transition hover:text-flame-400">
                     {phone}
                   </a>
@@ -127,15 +129,15 @@ export function Footer() {
             <li className="flex gap-3">
               <Icon name="mail" size={18} className="mt-0.5 flex-none text-flame-500" />
               <a
-                href={`mailto:${company.contact.email}`}
+                href={`mailto:${companyInfo.contact.email}`}
                 className="break-all transition hover:text-flame-400"
               >
-                {company.contact.email}
+                {companyInfo.contact.email}
               </a>
             </li>
             <li className="flex gap-3">
               <Icon name="clock" size={18} className="mt-0.5 flex-none text-flame-500" />
-              <span>{t(company.contact.hours)}</span>
+              <span>{t(companyInfo.contact.hours)}</span>
             </li>
           </ul>
         </div>
@@ -146,7 +148,7 @@ export function Footer() {
           <p>
             © {new Date().getFullYear()} {company.legalName}. {t(ui.footer.rights)}
           </p>
-          <p className="text-white/45">{t(company.tagline)}</p>
+          <p className="text-white/45">{t(companyInfo.tagline)}</p>
         </div>
       </div>
     </footer>

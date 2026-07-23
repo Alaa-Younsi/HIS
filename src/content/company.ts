@@ -1,3 +1,4 @@
+import type { IconName } from '@/components/Icon';
 import type { Localized } from '@/i18n/types';
 
 /**
@@ -50,9 +51,9 @@ export const company = {
   } satisfies Localized,
 
   heroSubtitle: {
-    fr: "HIS — HVAC & Industrial Solution Algeria accompagne les entreprises dans la conception, l'installation et la maintenance de systèmes fiables et durables.",
-    en: 'HIS — HVAC & Industrial Solution Algeria supports companies in the design, installation and maintenance of reliable, long-lasting systems.',
-    ar: 'ترافق HIS — حلول التكييف والصناعة الجزائر الشركات في تصميم وتركيب وصيانة أنظمة موثوقة ومستدامة.',
+    fr: 'Parce que votre entreprise mérite des installations fiables, performantes et durables, HIS vous accompagne à chaque étape de vos projets : étude, conception, installation, mise en service et maintenance.',
+    en: 'Because your business deserves reliable, high-performance and long-lasting installations, HIS supports you at every step of your projects: study, design, installation, commissioning and maintenance.',
+    ar: 'لأن شركتكم تستحق منشآت موثوقة وعالية الأداء ومستدامة، ترافقكم HIS في كل مرحلة من مراحل مشاريعكم: الدراسة والتصميم والتركيب والتشغيل والصيانة.',
   } satisfies Localized,
 
   intro: {
@@ -140,7 +141,48 @@ export const company = {
   ],
 } as const;
 
-export const whatsappUrl = (message: string) =>
-  `https://wa.me/${company.contact.whatsapp}?text=${encodeURIComponent(message)}`;
+/**
+ * Prend le numéro WhatsApp en paramètre (plutôt que de lire `company.contact.whatsapp`
+ * directement) car ce numéro devient modifiable depuis le tableau de bord une fois
+ * Supabase connecté — voir `useCompanyInfo()`.
+ */
+export const whatsappUrl = (whatsappNumber: string, message: string) =>
+  `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
 export const telUrl = (phone: string) => `tel:${phone.replace(/[^\d+]/g, '')}`;
+
+/**
+ * Forme complète de `company`, en types larges (pas les littéraux que `as const`
+ * donnerait via `typeof company`) — c'est cette forme que useCompanyInfo() renvoie,
+ * qu'elle vienne du contenu statique ci-dessus ou d'une ligne `company_info` lue
+ * depuis Supabase.
+ */
+export type Company = {
+  name: string;
+  legalName: string;
+  fullName: string;
+  siteUrl: string;
+  slogan: Localized;
+  tagline: Localized;
+  heroTitle: Localized;
+  heroHighlight: Localized;
+  heroSubtitle: Localized;
+  intro: Localized;
+  story: Localized;
+  mission: Localized;
+  expertise: Localized;
+  closing: Localized;
+  contact: {
+    phones: readonly string[];
+    whatsapp: string;
+    email: string;
+    address: Localized;
+    city: string;
+    country: string;
+    hours: Localized;
+    linkedin: string;
+    facebook: string;
+  };
+  whatsappMessage: Localized;
+  stats: readonly { value: string; label: Localized; icon: IconName }[];
+};

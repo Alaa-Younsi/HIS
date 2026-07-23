@@ -1,5 +1,14 @@
 # Modifier le contenu du site
 
+> **Si Supabase est connecté** (voir `SUPABASE_SETUP.md`), la façon normale
+> de modifier le contenu est le tableau de bord admin (`/admin`, voir
+> `ADMIN_GUIDE.md`) — plus besoin de toucher aux fichiers ci-dessous, et les
+> modifications sont visibles immédiatement, sans reconstruire le site.
+>
+> Tant que Supabase n'est pas connecté (ou pour tout modifier d'un coup avant
+> de brancher le tableau de bord), le contenu reste éditable directement dans
+> ces fichiers, comme décrit ci-dessous.
+
 Tout le texte, les photos et les coordonnées du site se trouvent dans **six
 fichiers**, dans le dossier `src/content/`. Aucune autre partie du code n'a
 besoin d'être touchée pour changer le contenu.

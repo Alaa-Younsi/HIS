@@ -32,10 +32,7 @@ export const imageVariants: Readonly<Record<string, readonly number[]>> = {
     1200
   ],
   "/images/realisations/cta-industrie.jpg": [
-    400,
-    600,
-    800,
-    1200
+    400
   ],
   "/images/realisations/reseau-exterieur.jpg": [
     400,
@@ -62,10 +59,7 @@ export const imageVariants: Readonly<Record<string, readonly number[]>> = {
     1200
   ],
   "/images/services/climatisation.jpg": [
-    400,
-    600,
-    800,
-    1200
+    400
   ],
   "/images/services/desenfumage.jpg": [
     400,
@@ -100,13 +94,69 @@ export const imageVariants: Readonly<Record<string, readonly number[]>> = {
   "/images/services/protection-incendie.jpg": [
     400,
     600,
-    800,
-    1200
+    800
   ],
   "/images/services/ventilation.jpg": [
     400,
     600,
     800,
     1200
+  ],
+  "/images/services/gallery/climatisation-groupe-unique.jpg": [
+    400
+  ],
+  "/images/services/gallery/protection-incendie-livraison.jpg": [
+    400,
+    600,
+    800
+  ],
+  "/images/services/gallery/ventilation-duct-perspective.jpg": [
+    400,
+    600
+  ],
+  "/images/services/gallery/ventilation-duct-run-jour.jpg": [
+    400,
+    600,
+    800,
+    1200
+  ],
+  "/images/services/gallery/ventilation-duct-run-nuit-bis.jpg": [
+    400,
+    600,
+    800,
+    1200
+  ],
+  "/images/services/gallery/ventilation-duct-run-nuit.jpg": [
+    400,
+    600,
+    800,
+    1200
+  ],
+  "/images/services/gallery/ventilation-ensemble-chantier-alt.jpg": [
+    400,
+    600,
+    800,
+    1200
+  ],
+  "/images/services/gallery/ventilation-ensemble-chantier.jpg": [
+    400,
+    600,
+    800,
+    1200
+  ],
+  "/images/services/gallery/ventilation-ventilateur-face-alt.jpg": [
+    400,
+    600
+  ],
+  "/images/services/gallery/ventilation-ventilateur-face.jpg": [
+    400,
+    600,
+    800,
+    1200
+  ],
+  "/images/services/gallery/ventilation-ventilateur-profil.jpg": [
+    400,
+    600,
+    800
   ]
 };

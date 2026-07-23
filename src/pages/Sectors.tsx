@@ -3,13 +3,14 @@ import { Icon } from '@/components/Icon';
 import { PartnerStrip } from '@/components/PartnerStrip';
 import { PageHero, SectionHeading } from '@/components/Section';
 import { Seo } from '@/components/Seo';
-import { clients, clientsIntro, suppliers } from '@/content/partners';
-import { sectors } from '@/content/sectors';
+import { usePartners, useSectors } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 
 export function Sectors() {
   const { t } = useLang();
+  const sectors = useSectors();
+  const { clients, suppliers, clientsIntro } = usePartners();
 
   return (
     <>

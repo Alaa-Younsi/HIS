@@ -15,8 +15,16 @@ export default defineConfig({
     rollupOptions: {
       output: {
         // Bibliothèques dans un chunk séparé : le cache navigateur les garde
-        // entre deux déploiements de contenu.
-        manualChunks: (id) => (id.includes('node_modules') ? 'vendor' : undefined),
+        // entre deux déploiements de contenu. xlsx est exclu exprès : il ne sert
+        // qu'à l'export Excel du tableau de bord (src/lib/exportLeads.ts) — le
+        // forcer dans "vendor" l'aurait envoyé à chaque visiteur public, alors
+        // qu'en le laissant suivre le découpage par route il ne charge que
+        // pour un administrateur ouvrant /admin/demandes.
+        manualChunks: (id) => {
+          if (!id.includes('node_modules')) return undefined;
+          if (id.includes('xlsx')) return undefined;
+          return 'vendor';
+        },
       },
     },
   },

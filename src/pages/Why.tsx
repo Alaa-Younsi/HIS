@@ -3,12 +3,14 @@ import { Icon } from '@/components/Icon';
 import { PageHero } from '@/components/Section';
 import { Seo } from '@/components/Seo';
 import { company } from '@/content/company';
-import { strengths } from '@/content/strengths';
+import { useCompanyInfo, useStrengths } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 
 export function Why() {
   const { t } = useLang();
+  const companyInfo = useCompanyInfo();
+  const strengths = useStrengths();
 
   return (
     <>
@@ -59,7 +61,7 @@ export function Why() {
           <blockquote className="mx-auto max-w-3xl">
             <Icon name="medal" size={40} className="mx-auto text-flame-500" />
             <p className="mt-6 text-2xl font-bold leading-snug text-white sm:text-3xl">
-              « {t(company.tagline)} »
+              « {t(companyInfo.tagline)} »
             </p>
             <footer className="mt-5 text-sm uppercase tracking-widest text-white/50">
               {company.legalName}
@@ -67,7 +69,7 @@ export function Why() {
           </blockquote>
 
           <ul className="mx-auto mt-14 grid max-w-4xl grid-cols-2 gap-px overflow-hidden rounded-xl bg-white/10 lg:grid-cols-4">
-            {company.stats.map((stat) => (
+            {companyInfo.stats.map((stat) => (
               <li key={stat.value} className="bg-navy-950 px-4 py-8 text-center">
                 <p className="text-3xl font-extrabold text-flame-500">{stat.value}</p>
                 <p className="mt-2 text-xs leading-snug text-white/60">{t(stat.label)}</p>

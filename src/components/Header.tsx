@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { company, telUrl } from '@/content/company';
-import { services } from '@/content/services';
+import { telUrl } from '@/content/company';
+import { useCompanyInfo, useServices } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { href, type PathKey } from '@/routes';
@@ -22,6 +22,8 @@ const navItems: readonly { key: PathKey; label: keyof typeof ui.nav }[] = [
 export function Header() {
   const { lang, t } = useLang();
   const { pathname } = useLocation();
+  const company = useCompanyInfo();
+  const services = useServices();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -66,7 +68,7 @@ export function Header() {
               <span>{company.contact.email}</span>
             </a>
             <a
-              href={telUrl(company.contact.phones[0])}
+              href={telUrl(company.contact.phones[0] ?? '')}
               className="flex items-center gap-2 text-white/80 transition hover:text-white"
             >
               <Icon name="phone" size={15} />
@@ -253,7 +255,7 @@ export function Header() {
                 {t(ui.cta.quote)}
               </Link>
               <a
-                href={telUrl(company.contact.phones[0])}
+                href={telUrl(company.contact.phones[0] ?? '')}
                 className="btn-ghost w-full"
                 dir="ltr"
               >
