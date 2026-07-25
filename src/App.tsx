@@ -1,12 +1,11 @@
 import { lazy, Suspense } from 'react';
 import { Navigate, Route, Routes, useParams } from 'react-router-dom';
+import { adminRoutes } from '@/admin/AdminApp';
 import { Layout } from '@/components/Layout';
 import { detectPreferredLang, LanguageProvider } from '@/i18n/LanguageProvider';
 import { isLang } from '@/i18n/types';
 import { paths } from '@/routes';
 import { Home } from '@/pages/Home';
-
-const AdminApp = lazy(() => import('@/admin/AdminApp').then((m) => ({ default: m.AdminApp })));
 
 // La page d'accueil est dans le bundle initial ; le reste est chargé à la demande.
 const About = lazy(() => import('@/pages/About').then((m) => ({ default: m.About })));
@@ -52,8 +51,9 @@ export function App() {
       <Routes>
         <Route path="/" element={<RootRedirect />} />
 
-        {/* Hors préfixe de langue et hors Layout public — tableau de bord interne. */}
-        <Route path="/admin/*" element={<AdminApp />} />
+        {/* Hors préfixe de langue et hors Layout public — tableau de bord interne.
+            Segments statiques : doivent l'emporter sur /:lang/services (voir AdminApp.tsx). */}
+        {adminRoutes}
 
         <Route path="/:lang" element={<LangLayout />}>
           <Route index element={<Home />} />

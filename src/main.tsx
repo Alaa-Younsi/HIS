@@ -2,7 +2,18 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import { App } from './App';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { reloadOnceForStaleChunk } from './lib/staleChunk';
 import './styles/index.css';
+
+// Vite émet `vite:preloadError` quand le préchargement d'un import dynamique
+// échoue — typiquement un chunk renommé par un redéploiement Vercel, demandé
+// par un onglet resté ouvert. Sans écouteur, Vite laisse l'erreur remonter et
+// la page reste blanche ; ici on recharge pour récupérer les fichiers à jour.
+window.addEventListener('vite:preloadError', (event) => {
+  event.preventDefault();
+  reloadOnceForStaleChunk();
+});
 
 // Préconnexion à Supabase (API + images Storage) une fois connecté — inutile
 // tant que VITE_SUPABASE_URL est vide, donc ajouté dynamiquement plutôt que
@@ -21,8 +32,10 @@ if (!container) throw new Error('#root introuvable dans index.html');
 
 createRoot(container).render(
   <StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
+    </ErrorBoundary>
   </StrictMode>,
 );

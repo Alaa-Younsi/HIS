@@ -35,7 +35,7 @@ export function Seo({ title, description, image, jsonLd, noindex = false }: SeoP
   // https://<projet>.supabase.co/...) une fois modifiée depuis le tableau de
   // bord, plutôt que d'un chemin local /images/... — ne préfixer par
   // siteUrl que dans ce second cas.
-  const resolvedImage = image ?? '/og-image.jpg';
+  const resolvedImage = image ?? '/og-image.png';
   const imageUrl = resolvedImage.startsWith('http') ? resolvedImage : `${company.siteUrl}${resolvedImage}`;
 
   return (
@@ -102,7 +102,7 @@ export function organizationJsonLd(info: Company, lang: 'fr' | 'en' | 'ar') {
     description: info.intro[lang],
     url: company.siteUrl,
     logo: `${company.siteUrl}/logo-his.png`,
-    image: `${company.siteUrl}/og-image.jpg`,
+    image: `${company.siteUrl}/og-image.png`,
     email: info.contact.email,
     telephone: info.contact.phones[0],
     address: {

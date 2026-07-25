@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Icon } from '@/components/Icon';
+import { useAdminT } from '@/admin/i18n';
 
 /**
  * Modale de confirmation pour une action destructrice — jamais un simple
@@ -10,7 +11,7 @@ import { Icon } from '@/components/Icon';
 export function ConfirmModal({
   title,
   description,
-  confirmLabel = 'Supprimer',
+  confirmLabel,
   onConfirm,
   onClose,
 }: {
@@ -20,6 +21,7 @@ export function ConfirmModal({
   onConfirm: () => Promise<void>;
   onClose: () => void;
 }) {
+  const { t } = useAdminT();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +32,7 @@ export function ConfirmModal({
       await onConfirm();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Une erreur est survenue');
+      setError(err instanceof Error ? err.message : t.common.errorGeneric);
       setBusy(false);
     }
   };
@@ -58,7 +60,7 @@ export function ConfirmModal({
             disabled={busy}
             className="btn-ghost flex-1 !py-2.5 !text-xs disabled:opacity-50"
           >
-            Annuler
+            {t.common.cancel}
           </button>
           <button
             type="button"
@@ -66,7 +68,7 @@ export function ConfirmModal({
             disabled={busy}
             className="btn flex-1 bg-flame-600 !py-2.5 !text-xs text-white hover:bg-flame-700 disabled:opacity-50"
           >
-            {busy ? 'Suppression…' : confirmLabel}
+            {busy ? t.common.deleting : (confirmLabel ?? t.common.delete)}
           </button>
         </div>
       </div>

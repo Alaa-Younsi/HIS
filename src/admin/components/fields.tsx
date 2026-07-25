@@ -1,5 +1,6 @@
 import { Icon, type IconName } from '@/components/Icon';
 import type { Localized, LocalizedList } from '@/i18n/types';
+import { useAdminT } from '@/admin/i18n';
 
 export const inputClass =
   'w-full rounded-lg border border-navy-200 bg-white px-4 py-2.5 text-sm text-navy-900 transition placeholder:text-navy-900/35 focus:border-flame-400 focus:outline-none focus:ring-2 focus:ring-flame-500/25';
@@ -94,6 +95,7 @@ export function LocalizedListField({
   value: LocalizedList;
   onChange: (next: LocalizedList) => void;
 }) {
+  const { t } = useAdminT();
   const rowCount = Math.max(value.fr.length, value.en.length, value.ar.length);
   const rows = Array.from({ length: rowCount }, (_, index) => ({
     fr: value.fr[index] ?? '',
@@ -136,7 +138,7 @@ export function LocalizedListField({
             <button
               type="button"
               onClick={() => removeRow(index)}
-              aria-label="Retirer cette ligne"
+              aria-label={t.fields.removeRow}
               className="mt-1 flex-none text-navy-400 transition hover:text-flame-600"
             >
               <Icon name="close" size={16} />
@@ -146,7 +148,7 @@ export function LocalizedListField({
       </div>
       <button type="button" onClick={addRow} className="btn-ghost mt-2 !py-2 !text-xs">
         <Icon name="check" size={14} />
-        Ajouter une ligne
+        {t.fields.addRow}
       </button>
     </div>
   );

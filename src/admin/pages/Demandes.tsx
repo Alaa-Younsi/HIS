@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { ConfirmModal } from '@/admin/components/ConfirmModal';
 import { inputClass } from '@/admin/components/fields';
+import { useAdminT } from '@/admin/i18n';
 import { exportLeadsToExcel } from '@/lib/exportLeads';
 import { supabase } from '@/lib/supabase';
 import type { LeadRow } from '@/types/db';
@@ -8,9 +9,13 @@ import type { LeadRow } from '@/types/db';
 type StatusFilter = 'all' | LeadRow['status'];
 type KindFilter = 'all' | LeadRow['kind'];
 
-const statusLabel: Record<LeadRow['status'], string> = { new: 'Nouvelle', read: 'Lue', archived: 'Archivée' };
-
 export function Demandes() {
+  const { t, locale } = useAdminT();
+  const statusLabel: Record<LeadRow['status'], string> = {
+    new: t.demandes.statusNew,
+    read: t.demandes.statusRead,
+    archived: t.demandes.statusArchived,
+  };
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
@@ -56,8 +61,8 @@ export function Demandes() {
     <div>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl text-navy-900">Demandes</h1>
-          <p className="mt-1 text-sm text-navy-900/60">Demandes de devis et messages reçus depuis le formulaire de contact.</p>
+          <h1 className="text-2xl text-navy-900">{t.demandes.title}</h1>
+          <p className="mt-1 text-sm text-navy-900/60">{t.demandes.subtitle}</p>
         </div>
         <div className="flex gap-2">
           <button
@@ -66,7 +71,7 @@ export function Demandes() {
             disabled={leads.length === 0}
             className="btn-ghost !py-2 !text-xs disabled:opacity-50"
           >
-            Exporter en Excel
+            {t.demandes.exportExcel}
           </button>
           <button
             type="button"
@@ -74,7 +79,7 @@ export function Demandes() {
             disabled={leads.length === 0}
             className="btn-ghost !py-2 !text-xs text-flame-600 disabled:opacity-50"
           >
-            Tout supprimer
+            {t.demandes.deleteAll}
           </button>
         </div>
       </div>
@@ -89,7 +94,7 @@ export function Demandes() {
               statusFilter === status ? 'bg-flame-500 text-white' : 'bg-navy-50 text-navy-700 hover:bg-navy-100'
             }`}
           >
-            {status === 'all' ? 'Toutes' : statusLabel[status]}
+            {status === 'all' ? t.demandes.filterAll : statusLabel[status]}
           </button>
         ))}
         <span className="mx-1 h-6 w-px self-center bg-navy-100" />
@@ -102,7 +107,7 @@ export function Demandes() {
               kindFilter === kind ? 'bg-navy-800 text-white' : 'bg-navy-50 text-navy-700 hover:bg-navy-100'
             }`}
           >
-            {kind === 'all' ? 'Tous types' : kind === 'devis' ? 'Devis' : 'Contact'}
+            {kind === 'all' ? t.demandes.filterAllKinds : kind === 'devis' ? t.demandes.devis : t.demandes.contact}
           </button>
         ))}
       </div>
@@ -112,23 +117,23 @@ export function Demandes() {
           <table className="w-full text-sm">
             <thead className="border-b border-navy-100 bg-navy-50/60 text-left text-xs font-bold uppercase tracking-wider text-navy-900/60">
               <tr>
-                <th className="whitespace-nowrap px-4 py-3">Nom</th>
-                <th className="whitespace-nowrap px-4 py-3">Type</th>
-                <th className="whitespace-nowrap px-4 py-3">Statut</th>
-                <th className="whitespace-nowrap px-4 py-3">Date</th>
+                <th className="whitespace-nowrap px-4 py-3">{t.demandes.colName}</th>
+                <th className="whitespace-nowrap px-4 py-3">{t.demandes.colType}</th>
+                <th className="whitespace-nowrap px-4 py-3">{t.demandes.colStatus}</th>
+                <th className="whitespace-nowrap px-4 py-3">{t.demandes.colDate}</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 <tr>
                   <td className="px-4 py-6 text-navy-900/50" colSpan={4}>
-                    Chargement…
+                    {t.common.loading}
                   </td>
                 </tr>
               ) : visible.length === 0 ? (
                 <tr>
                   <td className="px-4 py-6 text-navy-900/50" colSpan={4}>
-                    Aucune demande.
+                    {t.demandes.empty}
                   </td>
                 </tr>
               ) : (
@@ -147,9 +152,9 @@ export function Demandes() {
                       {lead.status === 'new' && <span className="me-2 inline-block h-2 w-2 rounded-full bg-flame-500" />}
                       {lead.name}
                     </td>
-                    <td className="px-4 py-3 text-navy-900/60">{lead.kind === 'devis' ? 'Devis' : 'Contact'}</td>
+                    <td className="px-4 py-3 text-navy-900/60">{lead.kind === 'devis' ? t.demandes.devis : t.demandes.contact}</td>
                     <td className="px-4 py-3 text-navy-900/60">{statusLabel[lead.status]}</td>
-                    <td className="px-4 py-3 text-navy-900/50">{new Date(lead.created_at).toLocaleDateString('fr-FR')}</td>
+                    <td className="px-4 py-3 text-navy-900/50">{new Date(lead.created_at).toLocaleDateString(locale)}</td>
                   </tr>
                 ))
               )}
@@ -159,14 +164,15 @@ export function Demandes() {
 
         <div className="card p-6">
           {!selected ? (
-            <p className="text-sm text-navy-900/50">Sélectionnez une demande pour voir le détail.</p>
+            <p className="text-sm text-navy-900/50">{t.demandes.selectPrompt}</p>
           ) : (
             <div>
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h2 className="text-lg text-navy-900">{selected.name}</h2>
                   <p className="text-xs text-navy-900/50">
-                    {new Date(selected.created_at).toLocaleString('fr-FR')} · {selected.kind === 'devis' ? 'Devis' : 'Contact'}
+                    {new Date(selected.created_at).toLocaleString(locale)} ·{' '}
+                    {selected.kind === 'devis' ? t.demandes.devis : t.demandes.contact}
                   </p>
                 </div>
                 <select
@@ -174,21 +180,21 @@ export function Demandes() {
                   onChange={(event) => void setStatus(selected, event.target.value as LeadRow['status'])}
                   className={`${inputClass} max-w-[9rem]`}
                 >
-                  <option value="new">Nouvelle</option>
-                  <option value="read">Lue</option>
-                  <option value="archived">Archivée</option>
+                  <option value="new">{t.demandes.statusNew}</option>
+                  <option value="read">{t.demandes.statusRead}</option>
+                  <option value="archived">{t.demandes.statusArchived}</option>
                 </select>
               </div>
 
               <dl className="mt-5 space-y-3 text-sm">
                 {selected.organisation && (
                   <div>
-                    <dt className="text-xs font-bold uppercase tracking-wider text-navy-900/50">Société</dt>
+                    <dt className="text-xs font-bold uppercase tracking-wider text-navy-900/50">{t.demandes.organisation}</dt>
                     <dd className="text-navy-900">{selected.organisation}</dd>
                   </div>
                 )}
                 <div>
-                  <dt className="text-xs font-bold uppercase tracking-wider text-navy-900/50">Téléphone</dt>
+                  <dt className="text-xs font-bold uppercase tracking-wider text-navy-900/50">{t.demandes.phone}</dt>
                   <dd className="text-navy-900" dir="ltr">
                     <a href={`tel:${selected.phone}`} className="hover:text-flame-600">
                       {selected.phone}
@@ -197,7 +203,7 @@ export function Demandes() {
                 </div>
                 {selected.email && (
                   <div>
-                    <dt className="text-xs font-bold uppercase tracking-wider text-navy-900/50">E-mail</dt>
+                    <dt className="text-xs font-bold uppercase tracking-wider text-navy-900/50">{t.demandes.email}</dt>
                     <dd className="text-navy-900">
                       <a href={`mailto:${selected.email}`} className="hover:text-flame-600">
                         {selected.email}
@@ -207,12 +213,12 @@ export function Demandes() {
                 )}
                 {selected.service_slug && (
                   <div>
-                    <dt className="text-xs font-bold uppercase tracking-wider text-navy-900/50">Service concerné</dt>
+                    <dt className="text-xs font-bold uppercase tracking-wider text-navy-900/50">{t.demandes.service}</dt>
                     <dd className="text-navy-900">{selected.service_slug}</dd>
                   </div>
                 )}
                 <div>
-                  <dt className="text-xs font-bold uppercase tracking-wider text-navy-900/50">Message</dt>
+                  <dt className="text-xs font-bold uppercase tracking-wider text-navy-900/50">{t.demandes.message}</dt>
                   <dd className="whitespace-pre-wrap text-navy-900">{selected.message}</dd>
                 </div>
               </dl>
@@ -223,9 +229,9 @@ export function Demandes() {
 
       {confirmingDeleteAll && (
         <ConfirmModal
-          title="Supprimer toutes les demandes ?"
-          description={`${leads.length} demande(s) seront supprimées définitivement. Pensez à exporter en Excel d'abord si vous voulez en garder une trace.`}
-          confirmLabel="Tout supprimer"
+          title={t.demandes.confirmAllTitle}
+          description={t.demandes.confirmAllDesc(leads.length)}
+          confirmLabel={t.demandes.deleteAll}
           onConfirm={deleteAll}
           onClose={() => setConfirmingDeleteAll(false)}
         />

@@ -3,6 +3,7 @@ import { useSupabaseTable } from '@/hooks/useSupabaseTable';
 import { ConfirmModal } from '@/admin/components/ConfirmModal';
 import { Field, LocalizedTextField, inputClass } from '@/admin/components/fields';
 import { ImageUploader } from '@/admin/components/ImageUploader';
+import { useAdminT } from '@/admin/i18n';
 import { projectCategories, type ProjectCategory } from '@/content/projects';
 import type { ProjectRow } from '@/types/db';
 import type { Localized } from '@/i18n/types';
@@ -32,6 +33,7 @@ const emptyDraft: Draft = {
 };
 
 export function Realisations() {
+  const { t, lang } = useAdminT();
   const { rows, loading, error, create, update, remove } = useSupabaseTable<ProjectRow>('projects');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -71,7 +73,7 @@ export function Realisations() {
       else if (editingId) await update(editingId, draft);
       cancel();
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : 'Échec de l’enregistrement');
+      setSaveError(err instanceof Error ? err.message : t.common.saveFailed);
     } finally {
       setSaving(false);
     }
@@ -81,12 +83,12 @@ export function Realisations() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl text-navy-900">Réalisations</h1>
-          <p className="mt-1 text-sm text-navy-900/60">La galerie de chantiers affichée sur le site.</p>
+          <h1 className="text-2xl text-navy-900">{t.realisations.title}</h1>
+          <p className="mt-1 text-sm text-navy-900/60">{t.realisations.subtitle}</p>
         </div>
         {!editingId && (
           <button type="button" onClick={startCreate} className="btn-primary !py-2.5 !text-xs">
-            Ajouter une réalisation
+            {t.realisations.add}
           </button>
         )}
       </div>
@@ -95,21 +97,21 @@ export function Realisations() {
 
       {editingId && draft && (
         <div className="mt-6 card space-y-5 p-6">
-          <LocalizedTextField label="Titre" required value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
-          <LocalizedTextField label="Lieu" value={draft.location} onChange={(location) => setDraft({ ...draft, location })} />
+          <LocalizedTextField label={t.common.title} required value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
+          <LocalizedTextField label={t.realisations.location} value={draft.location} onChange={(location) => setDraft({ ...draft, location })} />
           <LocalizedTextField
-            label="Description"
+            label={t.common.description}
             value={draft.description}
             onChange={(description) => setDraft({ ...draft, description })}
             textarea
           />
 
-          <Field label="Photo">
+          <Field label={t.common.photo}>
             <ImageUploader value={draft.image_url} onChange={(image_url) => setDraft({ ...draft, image_url })} folder="realisations" />
           </Field>
 
           <div className="grid gap-5 sm:grid-cols-3">
-            <Field label="Catégorie">
+            <Field label={t.realisations.category}>
               <select
                 value={draft.category}
                 onChange={(event) => setDraft({ ...draft, category: event.target.value as ProjectCategory })}
@@ -117,12 +119,12 @@ export function Realisations() {
               >
                 {projectCategories.map((category) => (
                   <option key={category.id} value={category.id}>
-                    {category.label.fr}
+                    {category.label[lang]}
                   </option>
                 ))}
               </select>
             </Field>
-            <Field label="Année">
+            <Field label={t.realisations.year}>
               <input
                 type="text"
                 value={draft.year}
@@ -130,7 +132,7 @@ export function Realisations() {
                 className={inputClass}
               />
             </Field>
-            <Field label="Ordre d'affichage">
+            <Field label={t.common.displayOrder}>
               <input
                 type="number"
                 value={draft.sort_order}
@@ -140,14 +142,14 @@ export function Realisations() {
             </Field>
           </div>
 
-          <Field label="Statut">
+          <Field label={t.common.status}>
             <select
               value={draft.status}
               onChange={(event) => setDraft({ ...draft, status: event.target.value as Draft['status'] })}
               className={`${inputClass} max-w-xs`}
             >
-              <option value="published">Publié</option>
-              <option value="draft">Brouillon (masqué du site)</option>
+              <option value="published">{t.common.published}</option>
+              <option value="draft">{t.common.draftHidden}</option>
             </select>
           </Field>
 
@@ -155,10 +157,10 @@ export function Realisations() {
 
           <div className="flex gap-3">
             <button type="button" onClick={() => void save()} disabled={saving} className="btn-primary !py-2.5 !text-xs disabled:opacity-60">
-              {saving ? 'Enregistrement…' : 'Enregistrer'}
+              {saving ? t.common.saving : t.common.save}
             </button>
             <button type="button" onClick={cancel} className="btn-ghost !py-2.5 !text-xs">
-              Annuler
+              {t.common.cancel}
             </button>
           </div>
         </div>
@@ -168,10 +170,10 @@ export function Realisations() {
         <table className="w-full text-sm">
           <thead className="border-b border-navy-100 bg-navy-50/60 text-left text-xs font-bold uppercase tracking-wider text-navy-900/60">
             <tr>
-              <th className="whitespace-nowrap px-4 py-3">Titre (FR)</th>
-              <th className="whitespace-nowrap px-4 py-3">Catégorie</th>
-              <th className="whitespace-nowrap px-4 py-3">Année</th>
-              <th className="whitespace-nowrap px-4 py-3">Statut</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.common.titleFr}</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.realisations.category}</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.realisations.year}</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.common.status}</th>
               <th className="whitespace-nowrap px-4 py-3" />
             </tr>
           </thead>
@@ -179,13 +181,13 @@ export function Realisations() {
             {loading ? (
               <tr>
                 <td className="px-4 py-6 text-navy-900/50" colSpan={5}>
-                  Chargement…
+                  {t.common.loading}
                 </td>
               </tr>
             ) : rows.length === 0 ? (
               <tr>
                 <td className="px-4 py-6 text-navy-900/50" colSpan={5}>
-                  Aucune réalisation.
+                  {t.realisations.empty}
                 </td>
               </tr>
             ) : (
@@ -193,7 +195,7 @@ export function Realisations() {
                 <tr key={row.id} className="whitespace-nowrap border-b border-navy-50 last:border-0">
                   <td className="px-4 py-3 font-medium text-navy-900">{(row.title as Localized).fr}</td>
                   <td className="px-4 py-3 text-navy-900/60">
-                    {projectCategories.find((c) => c.id === row.category)?.label.fr ?? row.category}
+                    {projectCategories.find((c) => c.id === row.category)?.label[lang] ?? row.category}
                   </td>
                   <td className="px-4 py-3 text-navy-900/60">{row.year}</td>
                   <td className="px-4 py-3">
@@ -202,19 +204,19 @@ export function Realisations() {
                         row.status === 'published' ? 'bg-navy-50 text-navy-700' : 'bg-flame-50 text-flame-600'
                       }`}
                     >
-                      {row.status === 'published' ? 'Publié' : 'Brouillon'}
+                      {row.status === 'published' ? t.common.published : t.common.draft}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-end">
                     <button type="button" onClick={() => startEdit(row)} className="text-xs font-bold text-navy-600 hover:text-flame-600">
-                      Modifier
+                      {t.common.edit}
                     </button>
                     <button
                       type="button"
                       onClick={() => setDeleteTarget(row)}
                       className="ms-4 text-xs font-bold text-navy-400 hover:text-flame-600"
                     >
-                      Supprimer
+                      {t.common.delete}
                     </button>
                   </td>
                 </tr>
@@ -226,8 +228,8 @@ export function Realisations() {
 
       {deleteTarget && (
         <ConfirmModal
-          title="Supprimer cette réalisation ?"
-          description={`« ${(deleteTarget.title as Localized).fr} » sera retirée du site immédiatement.`}
+          title={t.realisations.confirmTitle}
+          description={t.realisations.confirmDesc((deleteTarget.title as Localized).fr)}
           onConfirm={() => remove(deleteTarget.id)}
           onClose={() => setDeleteTarget(null)}
         />

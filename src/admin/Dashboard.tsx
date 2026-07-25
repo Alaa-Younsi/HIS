@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Icon } from '@/components/Icon';
 import { supabase } from '@/lib/supabase';
 import type { LeadRow } from '@/types/db';
+import { useAdminT } from './i18n';
 
 function StatCard({ label, value }: { label: string; value: number | string }) {
   return (
@@ -14,6 +15,7 @@ function StatCard({ label, value }: { label: string; value: number | string }) {
 }
 
 export function Dashboard() {
+  const { t, locale } = useAdminT();
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -40,27 +42,25 @@ export function Dashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl text-navy-900">Tableau de bord</h1>
-      <p className="mt-1 text-sm text-navy-900/60">Vue d'ensemble des demandes reçues sur le site.</p>
+      <h1 className="text-2xl text-navy-900">{t.dashboard.title}</h1>
+      <p className="mt-1 text-sm text-navy-900/60">{t.dashboard.subtitle}</p>
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <StatCard label="Nouvelles demandes" value={loading ? '—' : newCount} />
-        <StatCard label="Demandes cette semaine" value={loading ? '—' : weekCount} />
-        <StatCard label="Total (200 dernières)" value={loading ? '—' : leads.length} />
+        <StatCard label={t.dashboard.newRequests} value={loading ? '—' : newCount} />
+        <StatCard label={t.dashboard.weekRequests} value={loading ? '—' : weekCount} />
+        <StatCard label={t.dashboard.total} value={loading ? '—' : leads.length} />
       </div>
 
       <div className="mt-8 card p-6">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg text-navy-900">Demandes récentes</h2>
+          <h2 className="text-lg text-navy-900">{t.dashboard.recent}</h2>
           <Link to="/admin/demandes" className="text-xs font-bold uppercase tracking-wider text-flame-600">
-            Tout voir
+            {t.dashboard.viewAll}
           </Link>
         </div>
 
         {recent.length === 0 ? (
-          <p className="mt-4 text-sm text-navy-900/60">
-            {loading ? 'Chargement…' : 'Aucune demande pour le moment.'}
-          </p>
+          <p className="mt-4 text-sm text-navy-900/60">{loading ? t.common.loading : t.dashboard.empty}</p>
         ) : (
           <ul className="mt-4 divide-y divide-navy-100">
             {recent.map((lead) => (
@@ -75,11 +75,11 @@ export function Dashboard() {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-navy-900">{lead.name}</p>
                   <p className="truncate text-xs text-navy-900/50">
-                    {lead.kind === 'devis' ? 'Devis' : 'Contact'} · {lead.phone}
+                    {lead.kind === 'devis' ? t.dashboard.devis : t.dashboard.contact} · {lead.phone}
                   </p>
                 </div>
                 <span className="flex-none text-xs text-navy-900/40">
-                  {new Date(lead.created_at).toLocaleDateString('fr-FR')}
+                  {new Date(lead.created_at).toLocaleDateString(locale)}
                 </span>
               </li>
             ))}

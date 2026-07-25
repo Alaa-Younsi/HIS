@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Icon } from '@/components/Icon';
 import { uploadSiteImage } from '@/lib/upload';
+import { useAdminT } from '@/admin/i18n';
 
 /** Plusieurs photos (ex. la galerie d'un service) — ajout, suppression, aucun réordonnancement par glisser-déposer. */
 export function GalleryManager({
@@ -12,6 +13,7 @@ export function GalleryManager({
   onChange: (urls: readonly string[]) => void;
   folder: string;
 }) {
+  const { t } = useAdminT();
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +25,7 @@ export function GalleryManager({
       const uploaded = await Promise.all(Array.from(files).map((file) => uploadSiteImage(file, folder)));
       onChange([...value, ...uploaded]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Échec de l’envoi');
+      setError(err instanceof Error ? err.message : t.common.uploadFailed);
     } finally {
       setBusy(false);
     }
@@ -40,7 +42,7 @@ export function GalleryManager({
             <button
               type="button"
               onClick={() => removeAt(index)}
-              aria-label="Retirer cette photo"
+              aria-label={t.imageUploader.removePhoto}
               className="absolute -end-2 -top-2 grid h-6 w-6 place-items-center rounded-full bg-flame-500 text-white shadow-md transition hover:bg-flame-600"
             >
               <Icon name="close" size={12} />

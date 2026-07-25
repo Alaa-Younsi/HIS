@@ -58,9 +58,9 @@ export function Home() {
           ar: 'التكييف وتصريف الدخان والحماية من الحرائق في الجزائر',
         }}
         description={{
-          fr: "HIS conçoit, installe et entretient vos systèmes de climatisation, ventilation, désenfumage et protection incendie. Bureau d'études et équipes qualifiées basés à Blida.",
-          en: 'HIS designs, installs and maintains your air conditioning, ventilation, smoke extraction and fire protection systems. Design office and qualified teams based in Blida, Algeria.',
-          ar: 'تصمم HIS وتركب وتصون أنظمة التكييف والتهوية وتصريف الدخان والحماية من الحرائق. مكتب دراسات وفرق مؤهلة مقرها البليدة.',
+          fr: "HIS conçoit, installe et entretient vos systèmes de climatisation, ventilation, désenfumage et protection incendie. Bureau d'études et équipes qualifiées basés à Blida. Devis gratuit.",
+          en: 'HIS designs, installs and maintains your air conditioning, ventilation, smoke extraction and fire protection systems. Design office and qualified teams based in Blida, Algeria. Free quote.',
+          ar: 'تصمم HIS وتركب وتصون أنظمة التكييف والتهوية وتصريف الدخان والحماية من الحرائق. مكتب دراسات وفرق مؤهلة مقرها البليدة. عرض سعر مجاني.',
         }}
       />
 
@@ -78,8 +78,12 @@ export function Home() {
             fallbackIcon="factory"
             className="h-full w-full"
           />
-          {/* Sous la courbe (mobile / tablette) : simple voile pour la lisibilité. */}
-          <div className="absolute inset-0 bg-gradient-to-b from-navy-950/95 via-navy-950/85 to-navy-950/95 lg:hidden" />
+          {/* Sous la courbe (mobile / tablette) : voile dégradé — plus léger en
+              haut (la photo respire sous le header), plus dense en bas pour que
+              les cartes blanches qui chevauchent le hero ressortent nettement.
+              Un halo radial chaud ajoute de la profondeur derrière le texte. */}
+          <div className="absolute inset-0 bg-gradient-to-b from-navy-950/75 via-navy-900/80 to-navy-950/97 lg:hidden" />
+          <div className="absolute inset-0 bg-[radial-gradient(120%_80%_at_15%_25%,rgba(224,75,45,0.14),transparent_60%)] lg:hidden" />
           {/* À partir de lg : la courbe de marque remplace le voile.
               `flip-rtl` la retourne en arabe, sinon le texte passerait sur la photo. */}
           <Swoosh className="flip-rtl absolute inset-0 hidden h-full w-full lg:block" />
@@ -93,16 +97,16 @@ export function Home() {
             hero via une marge négative (voir `-mt-12 lg:-mt-16` plus bas) —
             il faut garder de la marge sous les boutons pour qu'elle ne les
             recouvre jamais, même sur un écran bas. */}
-        <div className="container-his relative pb-24 pt-16 sm:pb-28 sm:pt-20 lg:pb-32 lg:pt-14">
+        <div className="container-his relative pb-20 pt-10 sm:pb-28 sm:pt-20 lg:pb-32 lg:pt-14">
           <div className="animate-rise max-w-xl lg:max-w-[44%]">
             <p className="eyebrow eyebrow-on-dark">{t(company.slogan)}</p>
-            <h1 className="text-4xl uppercase leading-[1.08] text-white sm:text-5xl lg:text-[3.4rem]">
+            <h1 className="text-[2.1rem] uppercase leading-[1.1] tracking-tight text-white sm:text-5xl sm:leading-[1.08] sm:tracking-normal lg:text-[3.4rem]">
               <HeroTitle title={t(company.heroTitle)} highlight={t(company.heroHighlight)} />
             </h1>
-            <p className="mt-6 text-base leading-relaxed text-white/80 sm:text-lg">
+            <p className="mt-5 max-w-md text-[0.975rem] leading-relaxed text-white/80 sm:mt-6 sm:max-w-none sm:text-lg">
               {t(company.heroSubtitle)}
             </p>
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:mt-9 sm:flex-row">
               <Link to={href(lang, 'services')} className="btn-primary">
                 {t(ui.cta.ourServices)}
                 <Icon name="arrow" size={17} className="flip-rtl" />
@@ -163,7 +167,7 @@ export function Home() {
                   <Reveal delay={index * 80} className="h-full">
                     <Link
                       to={href(lang, 'services', service.slug)}
-                      className="group flex h-full flex-col items-center gap-3 px-4 py-7 text-center active:scale-[0.97] sm:px-6 sm:py-8 lg:px-5"
+                      className="group flex h-full flex-col items-center gap-3 px-4 py-6 text-center active:scale-[0.97] sm:px-6 sm:py-8 lg:px-5"
                     >
                       {/* Liseré rouge qui se révèle au survol */}
                       <span
@@ -179,7 +183,10 @@ export function Home() {
                       <span className="text-xs leading-relaxed text-navy-900/70">
                         {t(service.short)}
                       </span>
-                      <span className="mt-auto pt-3 text-flame-500 opacity-0 transition duration-300 group-hover:opacity-100">
+                      {/* Sur écran tactile (pas de survol) la flèche reste
+                          visible : elle occupe l'espace bas de la carte au lieu
+                          de le laisser vide, et signale que la case est cliquable. */}
+                      <span className="mt-auto pt-3 text-flame-500 opacity-70 transition duration-300 group-hover:opacity-100 lg:opacity-0 lg:group-hover:opacity-100">
                         <Icon name="arrow" size={16} className="flip-rtl" />
                       </span>
                     </Link>

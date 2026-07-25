@@ -3,6 +3,7 @@ import { useSupabaseTable } from '@/hooks/useSupabaseTable';
 import { ConfirmModal } from '@/admin/components/ConfirmModal';
 import { Field, inputClass } from '@/admin/components/fields';
 import { ImageUploader } from '@/admin/components/ImageUploader';
+import { useAdminT } from '@/admin/i18n';
 import type { PartnerRow } from '@/types/db';
 
 type Draft = { kind: 'client' | 'supplier'; name: string; logo_url: string; website_url: string; sort_order: number };
@@ -10,6 +11,7 @@ type Draft = { kind: 'client' | 'supplier'; name: string; logo_url: string; webs
 const emptyDraft = (kind: 'client' | 'supplier'): Draft => ({ kind, name: '', logo_url: '', website_url: '', sort_order: 0 });
 
 export function Partenaires() {
+  const { t } = useAdminT();
   const { rows, loading, error, create, update, remove } = useSupabaseTable<PartnerRow>('partners');
   const [tab, setTab] = useState<'client' | 'supplier'>('client');
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -43,7 +45,7 @@ export function Partenaires() {
       else if (editingId) await update(editingId, draft);
       cancel();
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : 'Échec de l’enregistrement');
+      setSaveError(err instanceof Error ? err.message : t.common.saveFailed);
     } finally {
       setSaving(false);
     }
@@ -53,12 +55,12 @@ export function Partenaires() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl text-navy-900">Partenaires</h1>
-          <p className="mt-1 text-sm text-navy-900/60">Logos des clients et fournisseurs affichés sur le site.</p>
+          <h1 className="text-2xl text-navy-900">{t.partenaires.title}</h1>
+          <p className="mt-1 text-sm text-navy-900/60">{t.partenaires.subtitle}</p>
         </div>
         {!editingId && (
           <button type="button" onClick={startCreate} className="btn-primary !py-2.5 !text-xs">
-            Ajouter
+            {t.partenaires.add}
           </button>
         )}
       </div>
@@ -76,7 +78,7 @@ export function Partenaires() {
               tab === kind ? 'bg-flame-500 text-white' : 'bg-navy-50 text-navy-700 hover:bg-navy-100'
             }`}
           >
-            {kind === 'client' ? 'Clients' : 'Fournisseurs'}
+            {kind === 'client' ? t.partenaires.clients : t.partenaires.suppliers}
           </button>
         ))}
       </div>
@@ -85,7 +87,7 @@ export function Partenaires() {
 
       {editingId && draft && (
         <div className="mt-6 card space-y-5 p-6">
-          <Field label="Nom" required>
+          <Field label={t.common.name} required>
             <input
               type="text"
               value={draft.name}
@@ -93,10 +95,10 @@ export function Partenaires() {
               className={inputClass}
             />
           </Field>
-          <Field label="Logo">
+          <Field label={t.partenaires.logo}>
             <ImageUploader value={draft.logo_url} onChange={(logo_url) => setDraft({ ...draft, logo_url })} folder="partners" />
           </Field>
-          <Field label="Site web (optionnel)">
+          <Field label={t.partenaires.website}>
             <input
               type="url"
               value={draft.website_url}
@@ -105,7 +107,7 @@ export function Partenaires() {
               className={inputClass}
             />
           </Field>
-          <Field label="Ordre d'affichage">
+          <Field label={t.common.displayOrder}>
             <input
               type="number"
               value={draft.sort_order}
@@ -118,10 +120,10 @@ export function Partenaires() {
 
           <div className="flex gap-3">
             <button type="button" onClick={() => void save()} disabled={saving} className="btn-primary !py-2.5 !text-xs disabled:opacity-60">
-              {saving ? 'Enregistrement…' : 'Enregistrer'}
+              {saving ? t.common.saving : t.common.save}
             </button>
             <button type="button" onClick={cancel} className="btn-ghost !py-2.5 !text-xs">
-              Annuler
+              {t.common.cancel}
             </button>
           </div>
         </div>
@@ -129,9 +131,9 @@ export function Partenaires() {
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {loading ? (
-          <p className="text-sm text-navy-900/50">Chargement…</p>
+          <p className="text-sm text-navy-900/50">{t.common.loading}</p>
         ) : visible.length === 0 ? (
-          <p className="text-sm text-navy-900/50">Aucun partenaire dans cette catégorie.</p>
+          <p className="text-sm text-navy-900/50">{t.partenaires.empty}</p>
         ) : (
           visible.map((row) => (
             <div key={row.id} className="card flex items-center gap-4 p-4">
@@ -144,14 +146,14 @@ export function Partenaires() {
               )}
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-navy-900">{row.name}</p>
-                <p className="text-xs text-navy-900/50">Ordre {row.sort_order}</p>
+                <p className="text-xs text-navy-900/50">{t.partenaires.orderTag(row.sort_order)}</p>
               </div>
               <div className="flex flex-none flex-col items-end gap-1 text-xs font-bold">
                 <button type="button" onClick={() => startEdit(row)} className="text-navy-600 hover:text-flame-600">
-                  Modifier
+                  {t.common.edit}
                 </button>
                 <button type="button" onClick={() => setDeleteTarget(row)} className="text-navy-400 hover:text-flame-600">
-                  Supprimer
+                  {t.common.delete}
                 </button>
               </div>
             </div>
@@ -161,8 +163,8 @@ export function Partenaires() {
 
       {deleteTarget && (
         <ConfirmModal
-          title="Supprimer ce partenaire ?"
-          description={`« ${deleteTarget.name} » sera retiré du site immédiatement.`}
+          title={t.partenaires.confirmTitle}
+          description={t.partenaires.confirmDesc(deleteTarget.name)}
           onConfirm={() => remove(deleteTarget.id)}
           onClose={() => setDeleteTarget(null)}
         />

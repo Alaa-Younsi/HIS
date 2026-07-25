@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { Icon } from '@/components/Icon';
 import { uploadSiteImage } from '@/lib/upload';
+import { useAdminT } from '@/admin/i18n';
 
 /** Une seule photo (ex. l'image d'un service). */
 export function ImageUploader({
@@ -12,6 +13,7 @@ export function ImageUploader({
   onChange: (url: string) => void;
   folder: string;
 }) {
+  const { t } = useAdminT();
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +25,7 @@ export function ImageUploader({
       const url = await uploadSiteImage(file, folder);
       onChange(url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Échec de l’envoi');
+      setError(err instanceof Error ? err.message : t.common.uploadFailed);
     } finally {
       setBusy(false);
     }
@@ -56,7 +58,7 @@ export function ImageUploader({
           disabled={busy}
           className="btn-ghost !py-2 !text-xs disabled:opacity-50"
         >
-          {busy ? 'Envoi…' : value ? 'Remplacer la photo' : 'Choisir une photo'}
+          {busy ? t.imageUploader.sending : value ? t.imageUploader.replace : t.imageUploader.choose}
         </button>
         {value && (
           <button
@@ -64,7 +66,7 @@ export function ImageUploader({
             onClick={() => onChange('')}
             className="block text-xs text-navy-900/50 transition hover:text-flame-600"
           >
-            Retirer
+            {t.common.remove}
           </button>
         )}
         {error && <p className="text-xs text-flame-600">{error}</p>}

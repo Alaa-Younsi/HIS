@@ -5,6 +5,7 @@ import { ConfirmModal } from '@/admin/components/ConfirmModal';
 import { Field, IconPicker, LocalizedListField, LocalizedTextField, inputClass } from '@/admin/components/fields';
 import { GalleryManager } from '@/admin/components/GalleryManager';
 import { ImageUploader } from '@/admin/components/ImageUploader';
+import { useAdminT } from '@/admin/i18n';
 import type { ServiceRow } from '@/types/db';
 import type { Localized, LocalizedList } from '@/i18n/types';
 
@@ -47,6 +48,7 @@ function slugify(text: string) {
 }
 
 export function Services() {
+  const { t } = useAdminT();
   const { rows, loading, error, create, update, remove } = useSupabaseTable<ServiceRow>('services');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -82,7 +84,7 @@ export function Services() {
   const save = async () => {
     if (!draft) return;
     if (!draft.slug.trim()) {
-      setSaveError('Le lien (slug) est obligatoire.');
+      setSaveError(t.services.slugRequired);
       return;
     }
     setSaving(true);
@@ -92,7 +94,7 @@ export function Services() {
       else if (editingId) await update(editingId, draft);
       cancel();
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : 'Échec de l’enregistrement — le lien (slug) est peut-être déjà utilisé.');
+      setSaveError(err instanceof Error ? err.message : t.services.saveFailedSlug);
     } finally {
       setSaving(false);
     }
@@ -102,12 +104,12 @@ export function Services() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl text-navy-900">Services</h1>
-          <p className="mt-1 text-sm text-navy-900/60">Les prestations présentées sur l'accueil et leurs pages dédiées.</p>
+          <h1 className="text-2xl text-navy-900">{t.services.title}</h1>
+          <p className="mt-1 text-sm text-navy-900/60">{t.services.subtitle}</p>
         </div>
         {!editingId && (
           <button type="button" onClick={startCreate} className="btn-primary !py-2.5 !text-xs">
-            Ajouter un service
+            {t.services.add}
           </button>
         )}
       </div>
@@ -117,7 +119,7 @@ export function Services() {
       {editingId && draft && (
         <div className="mt-6 card space-y-5 p-6">
           <LocalizedTextField
-            label="Titre"
+            label={t.common.title}
             required
             value={draft.title}
             onChange={(title) =>
@@ -129,7 +131,7 @@ export function Services() {
             }
           />
 
-          <Field label="Lien (slug)" required hint="Utilisé dans l'URL /services/<lien> — sans espaces ni accents.">
+          <Field label={t.services.slug} required hint={t.services.slugHint}>
             <input
               type="text"
               value={draft.slug}
@@ -140,33 +142,33 @@ export function Services() {
           </Field>
 
           <LocalizedTextField
-            label="Accroche courte"
+            label={t.services.short}
             value={draft.short}
             onChange={(short) => setDraft({ ...draft, short })}
           />
 
           <LocalizedTextField
-            label="Description"
+            label={t.common.description}
             value={draft.description}
             onChange={(description) => setDraft({ ...draft, description })}
             textarea
           />
 
           <LocalizedListField
-            label="Domaines d'application"
+            label={t.services.applications}
             value={draft.applications}
             onChange={(applications) => setDraft({ ...draft, applications })}
           />
 
-          <Field label="Icône">
+          <Field label={t.common.icon}>
             <IconPicker value={draft.icon} onChange={(icon) => setDraft({ ...draft, icon })} />
           </Field>
 
-          <Field label="Photo principale">
+          <Field label={t.services.mainPhoto}>
             <ImageUploader value={draft.image_url} onChange={(image_url) => setDraft({ ...draft, image_url })} folder="services" />
           </Field>
 
-          <Field label="Galerie de photos" hint="Affichée en bas de la page du service.">
+          <Field label={t.services.gallery} hint={t.services.galleryHint}>
             <GalleryManager
               value={draft.gallery}
               onChange={(gallery) => setDraft({ ...draft, gallery })}
@@ -175,7 +177,7 @@ export function Services() {
           </Field>
 
           <div className="grid gap-5 sm:grid-cols-2">
-            <Field label="Ordre d'affichage">
+            <Field label={t.common.displayOrder}>
               <input
                 type="number"
                 value={draft.sort_order}
@@ -183,14 +185,14 @@ export function Services() {
                 className={inputClass}
               />
             </Field>
-            <Field label="Statut">
+            <Field label={t.common.status}>
               <select
                 value={draft.status}
                 onChange={(event) => setDraft({ ...draft, status: event.target.value as Draft['status'] })}
                 className={inputClass}
               >
-                <option value="published">Publié</option>
-                <option value="draft">Brouillon (masqué du site)</option>
+                <option value="published">{t.common.published}</option>
+                <option value="draft">{t.common.draftHidden}</option>
               </select>
             </Field>
           </div>
@@ -199,10 +201,10 @@ export function Services() {
 
           <div className="flex gap-3">
             <button type="button" onClick={() => void save()} disabled={saving} className="btn-primary !py-2.5 !text-xs disabled:opacity-60">
-              {saving ? 'Enregistrement…' : 'Enregistrer'}
+              {saving ? t.common.saving : t.common.save}
             </button>
             <button type="button" onClick={cancel} className="btn-ghost !py-2.5 !text-xs">
-              Annuler
+              {t.common.cancel}
             </button>
           </div>
         </div>
@@ -212,11 +214,11 @@ export function Services() {
         <table className="w-full text-sm">
           <thead className="border-b border-navy-100 bg-navy-50/60 text-left text-xs font-bold uppercase tracking-wider text-navy-900/60">
             <tr>
-              <th className="whitespace-nowrap px-4 py-3">Icône</th>
-              <th className="whitespace-nowrap px-4 py-3">Titre (FR)</th>
-              <th className="whitespace-nowrap px-4 py-3">Lien</th>
-              <th className="whitespace-nowrap px-4 py-3">Statut</th>
-              <th className="whitespace-nowrap px-4 py-3">Ordre</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.common.icon}</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.common.titleFr}</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.services.colLink}</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.common.status}</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.common.order}</th>
               <th className="whitespace-nowrap px-4 py-3" />
             </tr>
           </thead>
@@ -224,13 +226,13 @@ export function Services() {
             {loading ? (
               <tr>
                 <td className="px-4 py-6 text-navy-900/50" colSpan={6}>
-                  Chargement…
+                  {t.common.loading}
                 </td>
               </tr>
             ) : rows.length === 0 ? (
               <tr>
                 <td className="px-4 py-6 text-navy-900/50" colSpan={6}>
-                  Aucun service.
+                  {t.services.empty}
                 </td>
               </tr>
             ) : (
@@ -249,20 +251,20 @@ export function Services() {
                         row.status === 'published' ? 'bg-navy-50 text-navy-700' : 'bg-flame-50 text-flame-600'
                       }`}
                     >
-                      {row.status === 'published' ? 'Publié' : 'Brouillon'}
+                      {row.status === 'published' ? t.common.published : t.common.draft}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-navy-900/60">{row.sort_order}</td>
                   <td className="px-4 py-3 text-end">
                     <button type="button" onClick={() => startEdit(row)} className="text-xs font-bold text-navy-600 hover:text-flame-600">
-                      Modifier
+                      {t.common.edit}
                     </button>
                     <button
                       type="button"
                       onClick={() => setDeleteTarget(row)}
                       className="ms-4 text-xs font-bold text-navy-400 hover:text-flame-600"
                     >
-                      Supprimer
+                      {t.common.delete}
                     </button>
                   </td>
                 </tr>
@@ -274,8 +276,8 @@ export function Services() {
 
       {deleteTarget && (
         <ConfirmModal
-          title="Supprimer ce service ?"
-          description={`« ${(deleteTarget.title as Localized).fr} » sera retiré du site immédiatement, y compris sa page dédiée.`}
+          title={t.services.confirmTitle}
+          description={t.services.confirmDesc((deleteTarget.title as Localized).fr)}
           onConfirm={() => remove(deleteTarget.id)}
           onClose={() => setDeleteTarget(null)}
         />

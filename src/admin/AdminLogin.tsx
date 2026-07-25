@@ -2,10 +2,13 @@ import { useState, type FormEvent } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { isSupabaseConfigured } from '@/lib/supabase';
+import { AdminLangSwitcher } from './components/AdminLangSwitcher';
 import { inputClass } from './components/fields';
+import { useAdminT } from './i18n';
 
 export function AdminLogin() {
   const { session, loading, signIn } = useAuth();
+  const { t } = useAdminT();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +24,7 @@ export function AdminLogin() {
     try {
       await signIn(email, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Connexion impossible');
+      setError(err instanceof Error ? err.message : t.login.error);
     } finally {
       setBusy(false);
     }
@@ -30,21 +33,24 @@ export function AdminLogin() {
   return (
     <div className="grid min-h-screen place-items-center bg-navy-950 px-4">
       <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-2xl">
-        <p className="text-2xl font-extrabold text-navy-900">
-          H<span className="text-flame-500">I</span>S
-        </p>
-        <p className="mt-1 text-sm text-navy-900/60">Tableau de bord</p>
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-2xl font-extrabold text-navy-900">
+              H<span className="text-flame-500">I</span>S
+            </p>
+            <p className="mt-1 text-sm text-navy-900/60">{t.login.subtitle}</p>
+          </div>
+          <AdminLangSwitcher />
+        </div>
 
         {!isSupabaseConfigured && (
-          <p className="mt-4 rounded-lg bg-flame-50 p-3 text-xs text-flame-700">
-            Supabase n'est pas encore connecté — voir SUPABASE_SETUP.md avant de pouvoir vous connecter.
-          </p>
+          <p className="mt-4 rounded-lg bg-flame-50 p-3 text-xs text-flame-700">{t.login.notConfigured}</p>
         )}
 
         <form onSubmit={(event) => void submit(event)} className="mt-6 space-y-4">
           <label className="block">
             <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-navy-900/70">
-              E-mail
+              {t.login.email}
             </span>
             <input
               type="email"
@@ -57,7 +63,7 @@ export function AdminLogin() {
           </label>
           <label className="block">
             <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-navy-900/70">
-              Mot de passe
+              {t.login.password}
             </span>
             <input
               type="password"
@@ -72,7 +78,7 @@ export function AdminLogin() {
           {error && <p className="text-sm text-flame-600">{error}</p>}
 
           <button type="submit" disabled={busy} className="btn-primary w-full disabled:opacity-60">
-            {busy ? 'Connexion…' : 'Se connecter'}
+            {busy ? t.login.signingIn : t.login.signIn}
           </button>
         </form>
       </div>

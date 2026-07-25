@@ -3,6 +3,7 @@ import { Icon, type IconName } from '@/components/Icon';
 import { useSupabaseTable } from '@/hooks/useSupabaseTable';
 import { ConfirmModal } from '@/admin/components/ConfirmModal';
 import { Field, IconPicker, LocalizedTextField, inputClass } from '@/admin/components/fields';
+import { useAdminT } from '@/admin/i18n';
 import type { StrengthRow } from '@/types/db';
 import type { Localized } from '@/i18n/types';
 
@@ -13,6 +14,7 @@ type Draft = { icon: IconName; title: Localized; description: Localized; sort_or
 const emptyDraft: Draft = { icon: 'medal', title: emptyLocalized, description: emptyLocalized, sort_order: 0 };
 
 export function PourquoiHis() {
+  const { t } = useAdminT();
   const { rows, loading, error, create, update, remove } = useSupabaseTable<StrengthRow>('strengths');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
@@ -48,7 +50,7 @@ export function PourquoiHis() {
       else if (editingId) await update(editingId, draft);
       cancel();
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : 'Échec de l’enregistrement');
+      setSaveError(err instanceof Error ? err.message : t.common.saveFailed);
     } finally {
       setSaving(false);
     }
@@ -58,12 +60,12 @@ export function PourquoiHis() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl text-navy-900">Pourquoi HIS ?</h1>
-          <p className="mt-1 text-sm text-navy-900/60">Les points forts affichés sur l'accueil et la page dédiée.</p>
+          <h1 className="text-2xl text-navy-900">{t.pourquoi.title}</h1>
+          <p className="mt-1 text-sm text-navy-900/60">{t.pourquoi.subtitle}</p>
         </div>
         {!editingId && (
           <button type="button" onClick={startCreate} className="btn-primary !py-2.5 !text-xs">
-            Ajouter un point fort
+            {t.pourquoi.add}
           </button>
         )}
       </div>
@@ -72,17 +74,17 @@ export function PourquoiHis() {
 
       {editingId && draft && (
         <div className="mt-6 card space-y-5 p-6">
-          <Field label="Icône">
+          <Field label={t.common.icon}>
             <IconPicker value={draft.icon} onChange={(icon) => setDraft({ ...draft, icon })} />
           </Field>
-          <LocalizedTextField label="Titre" required value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
+          <LocalizedTextField label={t.common.title} required value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
           <LocalizedTextField
-            label="Description"
+            label={t.common.description}
             value={draft.description}
             onChange={(description) => setDraft({ ...draft, description })}
             textarea
           />
-          <Field label="Ordre d'affichage">
+          <Field label={t.common.displayOrder}>
             <input
               type="number"
               value={draft.sort_order}
@@ -95,10 +97,10 @@ export function PourquoiHis() {
 
           <div className="flex gap-3">
             <button type="button" onClick={() => void save()} disabled={saving} className="btn-primary !py-2.5 !text-xs disabled:opacity-60">
-              {saving ? 'Enregistrement…' : 'Enregistrer'}
+              {saving ? t.common.saving : t.common.save}
             </button>
             <button type="button" onClick={cancel} className="btn-ghost !py-2.5 !text-xs">
-              Annuler
+              {t.common.cancel}
             </button>
           </div>
         </div>
@@ -108,9 +110,9 @@ export function PourquoiHis() {
         <table className="w-full text-sm">
           <thead className="border-b border-navy-100 bg-navy-50/60 text-left text-xs font-bold uppercase tracking-wider text-navy-900/60">
             <tr>
-              <th className="whitespace-nowrap px-4 py-3">Icône</th>
-              <th className="whitespace-nowrap px-4 py-3">Titre (FR)</th>
-              <th className="whitespace-nowrap px-4 py-3">Ordre</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.common.icon}</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.common.titleFr}</th>
+              <th className="whitespace-nowrap px-4 py-3">{t.common.order}</th>
               <th className="whitespace-nowrap px-4 py-3" />
             </tr>
           </thead>
@@ -118,13 +120,13 @@ export function PourquoiHis() {
             {loading ? (
               <tr>
                 <td className="px-4 py-6 text-navy-900/50" colSpan={4}>
-                  Chargement…
+                  {t.common.loading}
                 </td>
               </tr>
             ) : rows.length === 0 ? (
               <tr>
                 <td className="px-4 py-6 text-navy-900/50" colSpan={4}>
-                  Aucun point fort.
+                  {t.pourquoi.empty}
                 </td>
               </tr>
             ) : (
@@ -137,14 +139,14 @@ export function PourquoiHis() {
                   <td className="px-4 py-3 text-navy-900/60">{row.sort_order}</td>
                   <td className="px-4 py-3 text-end">
                     <button type="button" onClick={() => startEdit(row)} className="text-xs font-bold text-navy-600 hover:text-flame-600">
-                      Modifier
+                      {t.common.edit}
                     </button>
                     <button
                       type="button"
                       onClick={() => setDeleteTarget(row)}
                       className="ms-4 text-xs font-bold text-navy-400 hover:text-flame-600"
                     >
-                      Supprimer
+                      {t.common.delete}
                     </button>
                   </td>
                 </tr>
@@ -156,8 +158,8 @@ export function PourquoiHis() {
 
       {deleteTarget && (
         <ConfirmModal
-          title="Supprimer ce point fort ?"
-          description={`« ${(deleteTarget.title as Localized).fr} » sera retiré du site immédiatement.`}
+          title={t.pourquoi.confirmTitle}
+          description={t.pourquoi.confirmDesc((deleteTarget.title as Localized).fr)}
           onConfirm={() => remove(deleteTarget.id)}
           onClose={() => setDeleteTarget(null)}
         />
