@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { CtaBand } from '@/components/CtaBand';
 import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
 import { PageHero } from '@/components/Section';
@@ -98,8 +97,6 @@ export function Services() {
           ))}
         </div>
       </section>
-
-      <CtaBand />
     </>
   );
 }

@@ -1,4 +1,3 @@
-import { CtaBand } from '@/components/CtaBand';
 import { Icon } from '@/components/Icon';
 import { PartnerStrip } from '@/components/PartnerStrip';
 import { PageHero, SectionHeading } from '@/components/Section';
@@ -63,8 +62,6 @@ export function Sectors() {
           <PartnerStrip partners={suppliers} className="mt-6" compact />
         </div>
       </section>
-
-      <CtaBand />
     </>
   );
 }

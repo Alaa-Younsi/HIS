@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { CtaBand } from '@/components/CtaBand';
 import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
 import { SectionHeading } from '@/components/Section';
@@ -452,8 +451,6 @@ export function Home() {
           <PartnerStrip partners={suppliers} className="mt-6" compact />
         </div>
       </section>
-
-      <CtaBand />
     </>
   );
 }

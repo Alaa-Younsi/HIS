@@ -5,7 +5,15 @@ import type { Localized } from '@/i18n/types';
  * échec par un code stable — on ne peut pas afficher le même message générique
  * pour "champ invalide" et pour "trop de demandes en peu de temps".
  */
+// Ordre important : les clés sont testées par `includes` dans l'ordre
+// d'insertion — la variante spécifique « ERR_INVALID_INPUT: phone » doit
+// précéder la générique « ERR_INVALID_INPUT », sinon cette dernière l'attrape.
 const messages: Record<string, Localized> = {
+  'ERR_INVALID_INPUT: phone': {
+    fr: "Numéro de téléphone invalide. Saisissez un numéro mobile algérien à 10 chiffres (ex. 0550 70 00 36).",
+    en: 'Invalid phone number. Enter a 10-digit Algerian mobile number (e.g. 0550 70 00 36).',
+    ar: 'رقم هاتف غير صالح. أدخل رقم هاتف جزائري محمول من 10 أرقام (مثال: 0550 70 00 36).',
+  },
   ERR_INVALID_INPUT: {
     fr: "Certaines informations semblent invalides. Vérifiez le formulaire et réessayez.",
     en: 'Some information looks invalid. Please check the form and try again.',
@@ -24,8 +32,24 @@ const fallback: Localized = {
   ar: 'حدث خطأ ما. يرجى إعادة المحاولة أو الاتصال بنا عبر الهاتف/واتساب.',
 };
 
+/**
+ * Extrait le texte d'erreur. Un échec du RPC via supabase-js n'est PAS une
+ * instance d'`Error` mais un objet `PostgrestError` ({ message, code, ... }) :
+ * se fier à `instanceof Error` donnait « [object Object] », qui ne contient
+ * aucun de nos codes → le message générique s'affichait même pour un simple
+ * numéro de téléphone invalide. On lit donc `.message` sur tout objet.
+ */
+function rawMessage(error: unknown): string {
+  if (typeof error === 'string') return error;
+  if (error && typeof error === 'object' && 'message' in error) {
+    const message = (error as { message?: unknown }).message;
+    if (typeof message === 'string') return message;
+  }
+  return String(error);
+}
+
 export function leadErrorMessage(error: unknown): Localized {
-  const raw = error instanceof Error ? error.message : String(error);
+  const raw = rawMessage(error);
   const code = Object.keys(messages).find((key) => raw.includes(key));
   return code ? messages[code]! : fallback;
 }

@@ -1,4 +1,3 @@
-import { CtaBand } from '@/components/CtaBand';
 import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
 import { PageHero, SectionHeading } from '@/components/Section';
@@ -147,8 +146,6 @@ export function About() {
           </ol>
         </div>
       </section>
-
-      <CtaBand />
     </>
   );
 }
