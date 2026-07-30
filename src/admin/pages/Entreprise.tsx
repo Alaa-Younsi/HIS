@@ -110,14 +110,24 @@ function StatsEditor({ value, onChange }: { value: StatDraft[]; onChange: (next:
       <div className="space-y-4">
         {value.map((stat, index) => (
           <div key={index} className="rounded-lg border border-navy-100 p-4">
-            <div className="flex items-start gap-3">
-              <input
-                type="text"
-                value={stat.value}
-                onChange={(event) => update(index, { value: event.target.value })}
-                placeholder="10+"
-                className={`${inputClass} max-w-[7rem]`}
-              />
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+              <div className="flex items-center justify-between gap-3 sm:justify-start">
+                <input
+                  type="text"
+                  value={stat.value}
+                  onChange={(event) => update(index, { value: event.target.value })}
+                  placeholder="10+"
+                  className={`${inputClass} max-w-[7rem]`}
+                />
+                <button
+                  type="button"
+                  onClick={() => onChange(value.filter((_, i) => i !== index))}
+                  aria-label={t.entreprise.removeStat}
+                  className="flex-none text-navy-400 hover:text-flame-600 sm:hidden"
+                >
+                  <Icon name="close" size={16} />
+                </button>
+              </div>
               <div className="flex-1">
                 <IconPicker value={stat.icon} onChange={(icon) => update(index, { icon })} />
               </div>
@@ -125,7 +135,7 @@ function StatsEditor({ value, onChange }: { value: StatDraft[]; onChange: (next:
                 type="button"
                 onClick={() => onChange(value.filter((_, i) => i !== index))}
                 aria-label={t.entreprise.removeStat}
-                className="flex-none text-navy-400 hover:text-flame-600"
+                className="hidden flex-none text-navy-400 hover:text-flame-600 sm:block"
               >
                 <Icon name="close" size={16} />
               </button>

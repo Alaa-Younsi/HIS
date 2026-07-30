@@ -163,7 +163,7 @@ const PICKABLE_ICONS: readonly IconName[] = [
 
 export function IconPicker({ value, onChange }: { value: IconName; onChange: (next: IconName) => void }) {
   return (
-    <div className="grid grid-cols-8 gap-2 sm:grid-cols-10">
+    <div className="grid grid-cols-6 gap-2 sm:grid-cols-10">
       {PICKABLE_ICONS.map((name) => (
         <button
           key={name}
@@ -172,7 +172,7 @@ export function IconPicker({ value, onChange }: { value: IconName; onChange: (ne
           aria-label={name}
           aria-pressed={value === name}
           title={name}
-          className={`grid h-10 w-10 place-items-center rounded-lg border transition ${
+          className={`grid aspect-square w-full place-items-center rounded-lg border transition ${
             value === name
               ? 'border-flame-500 bg-flame-50 text-flame-600'
               : 'border-navy-100 text-navy-500 hover:border-navy-300'
