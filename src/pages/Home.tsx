@@ -432,9 +432,18 @@ export function Home() {
           <SectionHeading
             eyebrow={{ fr: 'Références', en: 'References', ar: 'مراجع' }}
             title={ui.sections.clients}
-            intro={clientsIntro}
             align="center"
           />
+
+          {/* Paragraphe de présentation, juste au-dessus des logos clients. */}
+          <div className="mx-auto mt-6 max-w-3xl space-y-4 text-center text-sm leading-relaxed text-navy-900/70 sm:text-base">
+            {t(clientsIntro)
+              .split('\n\n')
+              .map((paragraph) => (
+                <p key={paragraph.slice(0, 24)}>{paragraph}</p>
+              ))}
+          </div>
+
           <PartnerStrip partners={clients} className="mt-10" />
 
           <h3 className="mt-16 text-center text-sm font-bold uppercase tracking-[0.18em] text-navy-900/70">

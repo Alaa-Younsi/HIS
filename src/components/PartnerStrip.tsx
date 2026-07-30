@@ -56,7 +56,7 @@ function PartnerLogo({ partner, compact }: { partner: Partner; compact: boolean 
       decoding="async"
       onError={() => setFailed(true)}
       className={`w-auto object-contain opacity-70 grayscale transition duration-300 hover:opacity-100 hover:grayscale-0 ${
-        compact ? 'max-h-9' : 'max-h-12'
+        compact ? 'max-h-9' : 'max-h-20'
       }`}
     />
   );

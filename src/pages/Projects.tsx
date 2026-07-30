@@ -98,12 +98,23 @@ export function Projects() {
 
                   <div className="p-6">
                     <h2 className="text-lg leading-snug text-navy-900">{t(project.title)}</h2>
-                    <p className="mt-1.5 flex items-center gap-1.5 text-xs text-navy-900/70">
-                      <Icon name="pin" size={14} className="text-flame-500" />
-                      {t(project.location)}
-                      {project.year && <span className="text-navy-300">·</span>}
-                      {project.year}
-                    </p>
+                    <div className="mt-2 space-y-1.5">
+                      <p className="flex items-center gap-1.5 text-xs text-navy-900/70">
+                        <Icon name="pin" size={14} className="flex-none text-flame-500" />
+                        {t(project.location)}
+                        {project.year && <span className="text-navy-300">·</span>}
+                        {project.year}
+                      </p>
+                      {project.client && (
+                        <p className="flex items-center gap-1.5 text-xs text-navy-900/70">
+                          <Icon name="building" size={14} className="flex-none text-flame-500" />
+                          <span>
+                            <span className="font-semibold text-navy-900/80">{t(ui.labels.client)} : </span>
+                            {t(project.client)}
+                          </span>
+                        </p>
+                      )}
+                    </div>
                     <p className="mt-3 text-sm leading-relaxed text-navy-900/65">
                       {t(project.description)}
                     </p>

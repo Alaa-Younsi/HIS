@@ -19,6 +19,10 @@ export const imageVariants: Readonly<Record<string, readonly number[]>> = {
     1600,
     1920
   ],
+  "/images/realisations/belle-colline.jpg": [
+    400,
+    600
+  ],
   "/images/realisations/chambre-froide.jpg": [
     400,
     600,

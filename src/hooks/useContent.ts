@@ -80,6 +80,7 @@ function mapProject(row: ProjectRow): Project {
     image: row.image_url,
     title: asLocalized(row.title),
     location: asLocalized(row.location),
+    client: row.client != null ? asLocalized(row.client) : undefined,
     year: row.year,
     description: asLocalized(row.description),
   };

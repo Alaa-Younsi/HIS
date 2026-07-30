@@ -55,6 +55,8 @@ export type ProjectRow = {
   image_url: string;
   title: Json;
   location: Json;
+  /** Optionnel : présent seulement si la colonne existe côté base. */
+  client?: Json;
   description: Json;
   year: string;
   sort_order: number;

@@ -53,6 +53,7 @@ export const ui = {
     emailLabel: { fr: 'E-mail', en: 'Email', ar: 'البريد الإلكتروني' },
     hours: { fr: "Horaires", en: 'Opening hours', ar: 'أوقات العمل' },
     all: { fr: 'Toutes', en: 'All', ar: 'الكل' },
+    client: { fr: 'Client', en: 'Client', ar: 'العميل' },
     filterBy: { fr: 'Filtrer par catégorie', en: 'Filter by category', ar: 'تصفية حسب الفئة' },
     quickLinks: { fr: 'Navigation', en: 'Navigation', ar: 'روابط' },
     followUs: { fr: 'Suivez-nous', en: 'Follow us', ar: 'تابعنا' },

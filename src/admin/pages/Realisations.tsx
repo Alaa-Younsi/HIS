@@ -15,6 +15,7 @@ type Draft = {
   image_url: string;
   title: Localized;
   location: Localized;
+  client: Localized;
   description: Localized;
   year: string;
   sort_order: number;
@@ -26,6 +27,7 @@ const emptyDraft: Draft = {
   image_url: '',
   title: emptyLocalized,
   location: emptyLocalized,
+  client: emptyLocalized,
   description: emptyLocalized,
   year: '',
   sort_order: 0,
@@ -52,6 +54,7 @@ export function Realisations() {
       image_url: row.image_url,
       title: row.title as Localized,
       location: row.location as Localized,
+      client: (row.client as Localized | null) ?? emptyLocalized,
       description: row.description as Localized,
       year: row.year,
       sort_order: row.sort_order,
@@ -99,6 +102,7 @@ export function Realisations() {
         <div className="mt-6 card space-y-5 p-6">
           <LocalizedTextField label={t.common.title} required value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
           <LocalizedTextField label={t.realisations.location} value={draft.location} onChange={(location) => setDraft({ ...draft, location })} />
+          <LocalizedTextField label={t.realisations.client} value={draft.client} onChange={(client) => setDraft({ ...draft, client })} />
           <LocalizedTextField
             label={t.common.description}
             value={draft.description}

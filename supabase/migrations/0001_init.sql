@@ -86,6 +86,7 @@ create table projects (
   image_url text not null default '',
   title jsonb not null,
   location jsonb not null,
+  client jsonb,
   description jsonb not null,
   year text not null default '',
   sort_order int not null default 0,

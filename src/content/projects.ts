@@ -15,6 +15,8 @@ export type Project = {
   image: string;
   title: Localized;
   location: Localized;
+  /** Client / maître d'ouvrage — affiché sur la fiche. Laissez vide pour masquer. */
+  client?: Localized;
   /** Année du chantier — affichée sur la vignette. Laissez vide pour masquer. */
   year: string;
   description: Localized;
@@ -39,105 +41,65 @@ export const projectCategories: readonly { id: ProjectCategory; label: Localized
  */
 export const projects: readonly Project[] = [
   {
-    id: 'ria-parking-alger',
-    category: 'incendie',
-    image: '/images/realisations/ria-parking.jpg',
+    id: 'desenfumage-belle-colline',
+    category: 'desenfumage',
+    image: '/images/realisations/belle-colline.jpg',
     title: {
-      fr: "Réseau RIA — parking couvert",
-      en: 'Hose reel network — covered car park',
-      ar: 'شبكة بكرات خراطيم — موقف مغطى',
+      fr: 'Système de désenfumage — Résidence La Belle Colline',
+      en: 'Smoke extraction system — La Belle Colline residence',
+      ar: 'نظام تصريف الدخان — إقامة La Belle Colline',
     },
-    location: { fr: 'Alger', en: 'Algiers', ar: 'الجزائر العاصمة' },
-    year: '2024',
+    location: { fr: 'Jnane Sfari, Alger', en: 'Jnane Sfari, Algiers', ar: 'جنان سفاري، الجزائر العاصمة' },
+    client: {
+      fr: 'Promotion Immobilière Bessa',
+      en: 'Bessa Real Estate Development',
+      ar: 'الترقية العقارية Bessa',
+    },
+    year: '',
     description: {
-      fr: "Installation complète d'un réseau de robinets d'incendie armés avec armoires de protection et raccordement au surpresseur.",
-      en: 'Complete installation of an armed fire hose reel network with protection cabinets and booster connection.',
-      ar: 'تركيب كامل لشبكة بكرات خراطيم الحريق مع خزائن حماية وربط بمضخة التعزيز.',
+      fr: "HIS – HVAC & Industrial Solution Algeria a réalisé l'étude, la fabrication et l'installation du système de désenfumage de la résidence La Belle Colline, située à Jnane Sfari (Alger). Ce projet concerne deux tours d'habitation d'environ 90 mètres de hauteur chacune. Nos équipes ont assuré la fabrication des gaines de désenfumage, l'installation complète du réseau ainsi que la mise en œuvre des différents équipements du système. Cette réalisation garantit une évacuation efficace des fumées en cas d'incendie et répond aux exigences en matière de sécurité incendie, contribuant ainsi à la protection des occupants et des bâtiments.",
+      en: 'HIS – HVAC & Industrial Solution Algeria carried out the design, fabrication and installation of the smoke extraction system for the La Belle Colline residence in Jnane Sfari (Algiers). The project covers two residential towers of about 90 metres in height each. Our teams handled the fabrication of the smoke extraction ducts, the full installation of the network and the commissioning of the various system components. The work ensures efficient smoke evacuation in the event of a fire and meets fire-safety requirements, protecting both occupants and buildings.',
+      ar: 'أنجزت HIS – HVAC & Industrial Solution Algeria دراسة وتصنيع وتركيب نظام تصريف الدخان لإقامة La Belle Colline الواقعة في جنان سفاري (الجزائر العاصمة). يشمل هذا المشروع برجين سكنيين بارتفاع نحو 90 متراً لكل منهما. تكفّلت فرقنا بتصنيع قنوات تصريف الدخان والتركيب الكامل للشبكة وتشغيل مختلف تجهيزات النظام. يضمن هذا الإنجاز إخلاءً فعالاً للدخان في حال نشوب حريق ويستجيب لمتطلبات السلامة من الحرائق، مساهماً في حماية الساكنين والمباني.',
     },
   },
   {
-    id: 'coffret-incendie-entrepot',
-    category: 'incendie',
-    image: '/images/realisations/coffret-incendie.jpg',
-    title: {
-      fr: 'Coffrets incendie — entrepôt logistique',
-      en: 'Fire cabinets — logistics warehouse',
-      ar: 'خزائن الحريق — مستودع لوجستي',
-    },
-    location: { fr: 'Blida', en: 'Blida', ar: 'البليدة' },
-    year: '2024',
-    description: {
-      fr: "Pose et mise en service de coffrets incendie muraux sur l'ensemble des zones de stockage.",
-      en: 'Installation and commissioning of wall-mounted fire cabinets across all storage zones.',
-      ar: 'تركيب وتشغيل خزائن حريق جدارية عبر كل مناطق التخزين.',
-    },
-  },
-  {
-    id: 'skid-pompage',
+    id: 'incendie-kalipap',
     category: 'incendie',
     image: '/images/realisations/skid-pompage.jpg',
     title: {
-      fr: 'Skid de pompage incendie',
-      en: 'Fire pumping skid',
-      ar: 'وحدة ضخ الحريق',
+      fr: "Système de lutte contre l'incendie — Kalipap",
+      en: 'Fire-fighting system — Kalipap',
+      ar: 'نظام مكافحة الحرائق — Kalipap',
     },
-    location: { fr: 'Boufarik', en: 'Boufarik', ar: 'بوفاريك' },
-    year: '2023',
+    location: { fr: 'Boumedfaa, Aïn Defla', en: 'Boumedfaa, Aïn Defla', ar: 'بومدفع، عين الدفلى' },
+    client: { fr: 'Kalipap', en: 'Kalipap', ar: 'Kalipap' },
+    year: '',
     description: {
-      fr: "Fourniture et installation d'un skid de pompage incendie complet avec armoire de commande et essais de performance.",
-      en: 'Supply and installation of a complete fire pumping skid with control panel and performance testing.',
-      ar: 'توريد وتركيب وحدة ضخ حريق كاملة مع لوحة تحكم واختبارات الأداء.',
+      fr: "HIS – HVAC & Industrial Solution Algeria a réalisé l'étude, la fourniture et l'installation d'un système complet de lutte contre l'incendie sur le site industriel de Kalipap, situé à Boumedfaa (Aïn Defla). Kalipap est une entreprise algérienne de référence, spécialisée dans la transformation du papier depuis 1984. Dans le cadre de ce projet, nos équipes ont assuré la conception du réseau de protection incendie, l'installation des équipements ainsi que la mise en service de l'ensemble du système, garantissant une protection efficace des installations conformément aux exigences de sécurité incendie.",
+      en: 'HIS – HVAC & Industrial Solution Algeria carried out the design, supply and installation of a complete fire-fighting system at the Kalipap industrial site in Boumedfaa (Aïn Defla). Kalipap is a leading Algerian company specialised in paper processing since 1984. As part of this project, our teams handled the design of the fire-protection network, the installation of the equipment and the commissioning of the entire system, ensuring effective protection of the facilities in line with fire-safety requirements.',
+      ar: 'أنجزت HIS – HVAC & Industrial Solution Algeria دراسة وتوريد وتركيب نظام كامل لمكافحة الحرائق في الموقع الصناعي لمؤسسة Kalipap الواقع في بومدفع (عين الدفلى). تُعدّ Kalipap مؤسسة جزائرية رائدة متخصصة في تحويل الورق منذ 1984. في إطار هذا المشروع، تكفّلت فرقنا بتصميم شبكة الحماية من الحرائق وتركيب التجهيزات وتشغيل النظام بأكمله، بما يضمن حماية فعّالة للمنشآت وفق متطلبات السلامة من الحرائق.',
     },
   },
   {
-    id: 'reseau-incendie-exterieur',
-    category: 'incendie',
-    image: '/images/realisations/reseau-exterieur.jpg',
-    title: {
-      fr: 'Réseau incendie extérieur enterré',
-      en: 'Buried external fire network',
-      ar: 'شبكة حريق خارجية مدفونة',
-    },
-    location: { fr: "L'Arbaa", en: "L'Arbaa", ar: 'الأربعاء' },
-    year: '2023',
-    description: {
-      fr: "Terrassement, pose du réseau enterré et installation des poteaux incendie sur site industriel.",
-      en: 'Earthworks, buried network laying and fire hydrant installation on an industrial site.',
-      ar: 'أشغال الحفر ومد الشبكة المدفونة وتركيب صنابير الحريق في موقع صناعي.',
-    },
-  },
-  {
-    id: 'cta-industrie',
-    category: 'climatisation',
+    id: 'ventilation-silos-ccls',
+    category: 'ventilation',
     image: '/images/realisations/cta-industrie.jpg',
     title: {
-      fr: "Centrale de traitement d'air — site industriel",
-      en: 'Air handling unit — industrial site',
-      ar: 'وحدة معالجة الهواء — موقع صناعي',
+      fr: 'Système de ventilation — silos de stockage de céréales',
+      en: 'Ventilation system — grain storage silos',
+      ar: 'نظام تهوية — صوامع تخزين الحبوب',
     },
-    location: { fr: 'Blida', en: 'Blida', ar: 'البليدة' },
-    year: '2024',
+    location: { fr: "Sud de l'Algérie", en: 'Southern Algeria', ar: 'جنوب الجزائر' },
+    client: {
+      fr: 'Coopérative des Céréales et des Légumes Secs (CCLS)',
+      en: 'Cereals and Dry Legumes Cooperative (CCLS)',
+      ar: 'تعاونية الحبوب والخضر الجافة (CCLS)',
+    },
+    year: '',
     description: {
-      fr: "Installation de centrales de traitement d'air en toiture avec réseaux de gaines calorifugées.",
-      en: 'Rooftop air handling unit installation with insulated ductwork networks.',
-      ar: 'تركيب وحدات معالجة الهواء على السطح مع شبكات قنوات معزولة.',
-    },
-  },
-  {
-    id: 'chambre-froide-agro',
-    category: 'chambres-froides',
-    image: '/images/realisations/chambre-froide.jpg',
-    title: {
-      fr: 'Chambre froide agroalimentaire',
-      en: 'Food-industry cold room',
-      ar: 'غرفة تبريد للصناعة الغذائية',
-    },
-    location: { fr: 'Blida', en: 'Blida', ar: 'البليدة' },
-    year: '2023',
-    description: {
-      fr: "Conception et montage d'une chambre froide négative avec groupe frigorifique et régulation des températures.",
-      en: 'Design and assembly of a freezer cold room with refrigeration unit and temperature control.',
-      ar: 'تصميم وتركيب غرفة تبريد سالبة مع مجموعة تبريد وضبط درجات الحرارة.',
+      fr: "HIS – HVAC & Industrial Solution Algeria a réalisé l'étude, la fabrication et l'installation d'un système de ventilation pour des silos de stockage de céréales appartenant à une Coopérative des Céréales et des Légumes Secs (CCLS), située dans le sud de l'Algérie. Les CCLS jouent un rôle essentiel dans la collecte, le stockage et la conservation des céréales à l'échelle nationale. Ce projet avait pour objectif d'assurer une ventilation efficace des silos afin de préserver la qualité des céréales, de limiter les risques liés à l'humidité et à l'échauffement des grains, et de garantir des conditions de stockage conformes aux exigences du secteur agricole.",
+      en: 'HIS – HVAC & Industrial Solution Algeria carried out the design, fabrication and installation of a ventilation system for grain storage silos belonging to a Cereals and Dry Legumes Cooperative (CCLS) located in southern Algeria. The CCLS play an essential role in the collection, storage and preservation of cereals nationwide. The project aimed to ensure efficient ventilation of the silos in order to preserve grain quality, limit the risks linked to moisture and grain heating, and guarantee storage conditions that comply with the requirements of the agricultural sector.',
+      ar: 'أنجزت HIS – HVAC & Industrial Solution Algeria دراسة وتصنيع وتركيب نظام تهوية لصوامع تخزين الحبوب تابعة لتعاونية الحبوب والخضر الجافة (CCLS) الواقعة في جنوب الجزائر. تؤدي تعاونيات CCLS دوراً أساسياً في جمع الحبوب وتخزينها والحفاظ عليها على المستوى الوطني. هدف هذا المشروع إلى ضمان تهوية فعّالة للصوامع للحفاظ على جودة الحبوب والحدّ من المخاطر المرتبطة بالرطوبة وارتفاع حرارة الحبوب، وضمان ظروف تخزين مطابقة لمتطلبات القطاع الفلاحي.',
     },
   },
 ];

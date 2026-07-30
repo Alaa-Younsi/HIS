@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { useRef, useState, type FormEvent } from 'react';
 import { Icon } from '@/components/Icon';
 import { PageHero } from '@/components/Section';
 import { Seo } from '@/components/Seo';
@@ -9,18 +9,36 @@ import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { leadErrorMessage } from '@/lib/leadErrors';
 import { submitLead } from '@/lib/leads';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import type { Localized } from '@/i18n/types';
+
+/**
+ * Ramène un numéro algérien saisi librement (+213…, 00213…, espaces) au format
+ * local `0XXXXXXXXX` attendu par la validation du RPC `submit_lead`
+ * (`^0[5-7][0-9]{8}$`). Sans ça, une saisie « +213 550 70 00 36 » serait
+ * rejetée côté serveur et la demande n'atteindrait pas le tableau de bord.
+ */
+function normalizePhone(raw: string): string {
+  let d = raw.replace(/[^\d+]/g, '');
+  if (d.startsWith('+')) d = d.slice(1);
+  if (d.startsWith('00')) d = d.slice(2);
+  if (d.startsWith('213')) d = d.slice(3);
+  if (!d.startsWith('0')) d = `0${d}`;
+  return d;
+}
 
 const form = {
   title: { fr: 'Demander un devis', en: 'Request a quote', ar: 'اطلب عرض سعر' },
   intro: {
-    fr: "Renseignez votre besoin : le récapitulatif s'ouvre dans WhatsApp ou votre messagerie, prêt à envoyer.",
-    en: 'Describe your needs: the summary opens in WhatsApp or your mail app, ready to send.',
-    ar: 'صِف حاجتك: يفتح الملخص في واتساب أو بريدك، جاهزًا للإرسال.',
+    fr: "Renseignez votre besoin : envoyez-le en un clic via WhatsApp, ou transmettez-le directement à notre équipe. Nous vous recontactons rapidement.",
+    en: "Tell us what you need: send it in one click via WhatsApp, or submit it directly to our team. We'll get back to you quickly.",
+    ar: 'صِف حاجتك: أرسلها بنقرة واحدة عبر واتساب، أو أرسلها مباشرةً إلى فريقنا. سنتواصل معك قريبًا.',
   },
   name: { fr: 'Nom et prénom', en: 'Full name', ar: 'الاسم واللقب' },
   organisation: { fr: 'Société (optionnel)', en: 'Company (optional)', ar: 'الشركة (اختياري)' },
   phone: { fr: 'Téléphone', en: 'Phone', ar: 'الهاتف' },
+  phonePlaceholder: { fr: '0550 70 00 36', en: '0550 70 00 36', ar: '0550 70 00 36' },
+  email: { fr: 'E-mail (optionnel)', en: 'Email (optional)', ar: 'البريد الإلكتروني (اختياري)' },
   service: { fr: 'Service concerné', en: 'Service needed', ar: 'الخدمة المطلوبة' },
   servicePlaceholder: { fr: 'Choisir un service…', en: 'Choose a service…', ar: 'اختر خدمة…' },
   message: { fr: 'Votre projet', en: 'Your project', ar: 'مشروعك' },
@@ -30,7 +48,13 @@ const form = {
     ar: 'صِف باختصار حاجتك والموقع والآجال المرغوبة…',
   },
   sendWhatsapp: { fr: 'Envoyer via WhatsApp', en: 'Send via WhatsApp', ar: 'أرسل عبر واتساب' },
-  sendMail: { fr: 'Envoyer par e-mail', en: 'Send by email', ar: 'أرسل بالبريد' },
+  sendMail: { fr: 'Envoyer la demande', en: 'Send the request', ar: 'إرسال الطلب' },
+  sending: { fr: 'Envoi…', en: 'Sending…', ar: 'جارٍ الإرسال…' },
+  sent: {
+    fr: 'Votre demande a bien été envoyée. Notre équipe vous recontactera rapidement.',
+    en: 'Your request has been sent. Our team will get back to you shortly.',
+    ar: 'تم إرسال طلبك بنجاح. سيتواصل معك فريقنا قريبًا.',
+  },
 } satisfies Record<string, Localized>;
 
 export function Contact() {
@@ -38,10 +62,12 @@ export function Contact() {
   const companyInfo = useCompanyInfo();
   const services = useServices();
   const { isSpam } = useHoneypot();
+  const formRef = useRef<HTMLFormElement>(null);
   const [fields, setFields] = useState({
     name: '',
     organisation: '',
     phone: '',
+    email: '',
     service: '',
     message: '',
     // Champ piège : jamais rempli par un visiteur humain (masqué visuellement,
@@ -50,16 +76,21 @@ export function Contact() {
     website: '',
   });
   const [leadNotice, setLeadNotice] = useState<Localized | null>(null);
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
 
-  const update = (key: keyof typeof fields) => (event: { target: { value: string } }) =>
+  const update = (key: keyof typeof fields) => (event: { target: { value: string } }) => {
     setFields((current) => ({ ...current, [key]: event.target.value }));
+    // Toute modification après un envoi réussi réarme le formulaire.
+    if (status === 'sent') setStatus('idle');
+  };
 
-  /** Récapitulatif texte envoyé vers WhatsApp ou la messagerie. */
+  /** Récapitulatif texte envoyé vers WhatsApp. */
   const buildSummary = () => {
     const lines = [
       `${t(form.name)}: ${fields.name}`,
       fields.organisation && `${t(form.organisation)}: ${fields.organisation}`,
       `${t(form.phone)}: ${fields.phone}`,
+      fields.email && `${t(form.email)}: ${fields.email}`,
       fields.service && `${t(form.service)}: ${fields.service}`,
       '',
       fields.message,
@@ -68,41 +99,69 @@ export function Contact() {
   };
 
   /**
-   * Best-effort : enregistre la demande dans le tableau de bord si Supabase
-   * est connecté. N'empêche jamais l'ouverture de WhatsApp/l'e-mail en cas
-   * d'échec — c'est un enregistrement supplémentaire, pas le chemin garanti.
+   * Enregistre la demande dans le tableau de bord via le RPC `submit_lead`.
+   * Lève une erreur en cas d'échec (validation, limite de débit, réseau) :
+   * l'appelant décide quoi en faire selon le canal choisi.
    */
-  const recordLead = async () => {
-    if (isSpam(fields.website)) return;
-    try {
-      await submitLead({
-        kind: fields.service ? 'devis' : 'contact',
-        name: fields.name,
-        organisation: fields.organisation,
-        phone: fields.phone,
-        serviceSlug: services.find((service) => t(service.title) === fields.service)?.slug ?? '',
-        message: fields.message,
-        lang,
-      });
-      setLeadNotice(null);
-    } catch (error) {
-      setLeadNotice(leadErrorMessage(error));
-    }
+  const persistLead = () =>
+    submitLead({
+      kind: fields.service ? 'devis' : 'contact',
+      name: fields.name,
+      organisation: fields.organisation,
+      phone: normalizePhone(fields.phone),
+      email: fields.email,
+      serviceSlug: services.find((service) => t(service.title) === fields.service)?.slug ?? '',
+      message: fields.message,
+      lang,
+    });
+
+  /**
+   * Bouton WhatsApp : ouvre une conversation WhatsApp adressée au numéro de
+   * l'entreprise, avec le récapitulatif pré-rempli (le visiteur n'a plus qu'à
+   * appuyer sur « Envoyer »). En parallèle, la demande est aussi consignée dans
+   * le tableau de bord — mais sans jamais bloquer l'ouverture de WhatsApp.
+   */
+  const sendViaWhatsapp = (event: FormEvent) => {
+    event.preventDefault();
+    if (!isSpam(fields.website)) void persistLead().catch(() => undefined);
+    window.open(
+      whatsappUrl(companyInfo.contact.whatsapp, buildSummary()),
+      '_blank',
+      'noopener,noreferrer',
+    );
   };
 
-  const submit = (channel: 'whatsapp' | 'mail') => (event: FormEvent) => {
-    event.preventDefault();
-    void recordLead();
-    const summary = buildSummary();
+  /**
+   * Bouton « Envoyer la demande » : soumission directe via le site. La demande
+   * part dans le tableau de bord (rubrique « Demandes »), sans ouvrir WhatsApp
+   * ni la messagerie. Un message de confirmation s'affiche à l'écran.
+   */
+  const sendViaSite = async () => {
+    // Le bouton est de type "button" : on déclenche nous-mêmes la validation
+    // native des champs requis (nom, téléphone, message).
+    if (formRef.current && !formRef.current.reportValidity()) return;
+    if (isSpam(fields.website)) return;
 
-    if (channel === 'whatsapp') {
-      window.open(whatsappUrl(companyInfo.contact.whatsapp, summary), '_blank', 'noopener,noreferrer');
+    // Garde-fou : sans backend connecté, on retombe sur la messagerie plutôt
+    // que de prétendre un envoi qui n'aurait enregistré nulle part.
+    if (!isSupabaseConfigured) {
+      const subject = `${t(form.title)} — ${fields.name}`;
+      window.location.href = `mailto:${companyInfo.contact.email}?subject=${encodeURIComponent(
+        subject,
+      )}&body=${encodeURIComponent(buildSummary())}`;
       return;
     }
-    const subject = `${t(form.title)} — ${fields.name}`;
-    window.location.href = `mailto:${companyInfo.contact.email}?subject=${encodeURIComponent(
-      subject,
-    )}&body=${encodeURIComponent(summary)}`;
+
+    setStatus('sending');
+    setLeadNotice(null);
+    try {
+      await persistLead();
+      setStatus('sent');
+      setFields({ name: '', organisation: '', phone: '', email: '', service: '', message: '', website: '' });
+    } catch (error) {
+      setStatus('idle');
+      setLeadNotice(leadErrorMessage(error));
+    }
   };
 
   const mapQuery = encodeURIComponent("Haouch Ben Chergui, L'Arbaa, Blida, Algérie");
@@ -183,7 +242,7 @@ export function Contact() {
             <h2 className="text-2xl text-navy-900">{t(form.title)}</h2>
             <p className="mt-2 text-sm leading-relaxed text-navy-900/65">{t(form.intro)}</p>
 
-            <form onSubmit={submit('whatsapp')} className="mt-7 space-y-5">
+            <form ref={formRef} onSubmit={sendViaWhatsapp} className="mt-7 space-y-5">
               {/* Piège anti-spam : un champ qu'un visiteur humain ne peut pas voir ni atteindre au clavier. */}
               <input
                 type="text"
@@ -227,20 +286,32 @@ export function Contact() {
                     onChange={update('phone')}
                     autoComplete="tel"
                     dir="ltr"
+                    placeholder={t(form.phonePlaceholder)}
                     className={inputClass}
                   />
                 </Field>
-                <Field label={t(form.service)}>
-                  <select value={fields.service} onChange={update('service')} className={inputClass}>
-                    <option value="">{t(form.servicePlaceholder)}</option>
-                    {services.map((service) => (
-                      <option key={service.slug} value={service.title[lang]}>
-                        {t(service.title)}
-                      </option>
-                    ))}
-                  </select>
+                <Field label={t(form.email)}>
+                  <input
+                    type="email"
+                    value={fields.email}
+                    onChange={update('email')}
+                    autoComplete="email"
+                    dir="ltr"
+                    className={inputClass}
+                  />
                 </Field>
               </div>
+
+              <Field label={t(form.service)}>
+                <select value={fields.service} onChange={update('service')} className={inputClass}>
+                  <option value="">{t(form.servicePlaceholder)}</option>
+                  {services.map((service) => (
+                    <option key={service.slug} value={service.title[lang]}>
+                      {t(service.title)}
+                    </option>
+                  ))}
+                </select>
+              </Field>
 
               <Field label={t(form.message)} required>
                 <textarea
@@ -254,18 +325,33 @@ export function Contact() {
               </Field>
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <button type="submit" className="btn-primary flex-1">
+                <button type="submit" disabled={status === 'sending'} className="btn-primary flex-1 disabled:opacity-60">
                   <Icon name="whatsapp" size={18} />
                   {t(form.sendWhatsapp)}
                 </button>
-                <button type="button" onClick={submit('mail')} className="btn-ghost flex-1">
+                <button
+                  type="button"
+                  onClick={() => void sendViaSite()}
+                  disabled={status === 'sending'}
+                  className="btn-ghost flex-1 disabled:opacity-60"
+                >
                   <Icon name="mail" size={18} />
-                  {t(form.sendMail)}
+                  {status === 'sending' ? t(form.sending) : t(form.sendMail)}
                 </button>
               </div>
 
+              {status === 'sent' && (
+                <p
+                  role="status"
+                  className="flex items-center gap-2 rounded-lg bg-[#e9f9ef] px-4 py-3 text-sm font-medium text-[#1a7f45]"
+                >
+                  <Icon name="check" size={16} className="flex-none" />
+                  {t(form.sent)}
+                </p>
+              )}
+
               {leadNotice && (
-                <p role="status" className="text-xs text-navy-900/60">
+                <p role="status" className="text-sm text-flame-600">
                   {t(leadNotice)}
                 </p>
               )}
