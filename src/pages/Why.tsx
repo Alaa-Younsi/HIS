@@ -1,4 +1,3 @@
-import { CtaBand } from '@/components/CtaBand';
 import { Icon } from '@/components/Icon';
 import { PageHero } from '@/components/Section';
 import { Seo } from '@/components/Seo';
@@ -78,8 +77,6 @@ export function Why() {
           </ul>
         </div>
       </section>
-
-      <CtaBand />
     </>
   );
 }

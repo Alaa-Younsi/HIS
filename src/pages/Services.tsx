@@ -58,7 +58,7 @@ export function Services() {
                 fallbackIcon={service.icon}
                 priority={index === 0}
                 sizes="(min-width: 1024px) 45vw, 100vw"
-                className={`h-full ${index % 2 === 1 ? 'lg:order-2' : ''}`}
+                className={`h-full w-full ${index % 2 === 1 ? 'lg:order-2' : ''}`}
               />
 
               <div className="flex flex-col justify-center p-7 sm:p-10">

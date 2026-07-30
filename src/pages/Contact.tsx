@@ -159,6 +159,11 @@ export function Contact() {
       setStatus('sent');
       setFields({ name: '', organisation: '', phone: '', email: '', service: '', message: '', website: '' });
     } catch (error) {
+      // La bannière affichée au visiteur est volontairement générique (voir
+      // leadErrors.ts). On journalise l'erreur brute pour pouvoir diagnostiquer
+      // un échec inattendu — réseau bloqué, cache de schéma PostgREST, etc. —
+      // qui retombe sur le message par défaut.
+      console.error('[lead] échec de submit_lead :', error);
       setStatus('idle');
       setLeadNotice(leadErrorMessage(error));
     }
