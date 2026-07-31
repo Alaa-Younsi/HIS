@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { company, telUrl } from '@/content/company';
+import { company, mailtoUrl, socialLinks, telUrl } from '@/content/company';
 import { useCompanyInfo, useServices } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
@@ -49,28 +49,18 @@ export function Footer() {
           </div>
           <p className="mt-5 max-w-sm text-sm leading-relaxed">{t(ui.footer.tagline)}</p>
           <div className="mt-5 flex items-center gap-3">
-            {companyInfo.contact.linkedin && (
+            {socialLinks(companyInfo.contact).map((social) => (
               <a
-                href={companyInfo.contact.linkedin}
+                key={social.icon}
+                href={social.url}
                 target="_blank"
                 rel="noreferrer noopener"
-                aria-label="LinkedIn"
+                aria-label={social.label}
                 className="grid h-9 w-9 place-items-center rounded-md bg-white/8 transition hover:bg-flame-500 hover:text-white"
               >
-                <Icon name="linkedin" size={17} />
+                <Icon name={social.icon} size={17} />
               </a>
-            )}
-            {companyInfo.contact.facebook && (
-              <a
-                href={companyInfo.contact.facebook}
-                target="_blank"
-                rel="noreferrer noopener"
-                aria-label="Facebook"
-                className="grid h-9 w-9 place-items-center rounded-md bg-white/8 transition hover:bg-flame-500 hover:text-white"
-              >
-                <Icon name="facebook" size={17} />
-              </a>
-            )}
+            ))}
           </div>
         </div>
 
@@ -129,7 +119,7 @@ export function Footer() {
             <li className="flex gap-3">
               <Icon name="mail" size={18} className="mt-0.5 flex-none text-flame-500" />
               <a
-                href={`mailto:${companyInfo.contact.email}`}
+                href={mailtoUrl(companyInfo.contact.email, t(ui.email.subject), t(ui.email.body))}
                 className="break-all transition hover:text-flame-400"
               >
                 {companyInfo.contact.email}

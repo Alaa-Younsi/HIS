@@ -28,6 +28,8 @@ export type CompanyInfoRow = {
   country: string;
   linkedin_url: string;
   facebook_url: string;
+  instagram_url: string;
+  tiktok_url: string;
   whatsapp_message: Json;
   stats: Json;
   updated_at: string;

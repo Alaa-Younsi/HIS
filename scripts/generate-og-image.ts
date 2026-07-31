@@ -80,7 +80,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.
 
   <!-- Pied : localisation + domaine -->
   <text x="90" y="576" font-family="Arial, sans-serif" font-weight="700" font-size="27" fill="#ffffff">Blida — Algérie</text>
-  <text x="1110" y="576" text-anchor="end" font-family="Arial, sans-serif" font-weight="700" font-size="27" fill="${FLAME_400}">his-steel.vercel.app</text>
+  <text x="1110" y="576" text-anchor="end" font-family="Arial, sans-serif" font-weight="700" font-size="27" fill="${FLAME_400}">his-hvac.com</text>
 </svg>`;
 
 const png = new Resvg(svg, {

@@ -5,7 +5,7 @@ import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { Footer } from './Footer';
 import { Header } from './Header';
-import { organizationJsonLd } from './Seo';
+import { organizationJsonLd, websiteJsonLd } from './Seo';
 import { WhatsAppButton } from './WhatsAppButton';
 
 /** Remet la page en haut à chaque navigation (sauf retour navigateur). */
@@ -27,10 +27,12 @@ export function Layout() {
     <>
       <ScrollToTop />
 
-      {/* Fiche d'entreprise structurée, présente sur toutes les pages. */}
+      {/* Fiche d'entreprise + identité du site, présentes sur toutes les pages. */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd(companyInfo, lang)) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([organizationJsonLd(companyInfo, lang), websiteJsonLd(lang)]),
+        }}
       />
 
       <a

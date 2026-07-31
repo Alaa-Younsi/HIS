@@ -2,7 +2,7 @@ import { useRef, useState, type FormEvent } from 'react';
 import { Icon } from '@/components/Icon';
 import { PageHero } from '@/components/Section';
 import { Seo } from '@/components/Seo';
-import { company, telUrl, whatsappUrl } from '@/content/company';
+import { company, mailtoUrl, telUrl, whatsappUrl } from '@/content/company';
 import { useCompanyInfo, useServices } from '@/hooks/useContent';
 import { useHoneypot } from '@/hooks/useHoneypot';
 import { useLang } from '@/i18n/LanguageProvider';
@@ -145,10 +145,11 @@ export function Contact() {
     // Garde-fou : sans backend connecté, on retombe sur la messagerie plutôt
     // que de prétendre un envoi qui n'aurait enregistré nulle part.
     if (!isSupabaseConfigured) {
-      const subject = `${t(form.title)} — ${fields.name}`;
-      window.location.href = `mailto:${companyInfo.contact.email}?subject=${encodeURIComponent(
-        subject,
-      )}&body=${encodeURIComponent(buildSummary())}`;
+      window.location.href = mailtoUrl(
+        companyInfo.contact.email,
+        `${t(form.title)} — ${fields.name}`,
+        buildSummary(),
+      );
       return;
     }
 
@@ -219,8 +220,9 @@ export function Contact() {
             </ContactCard>
 
             <ContactCard icon="mail" label={t(ui.labels.emailLabel)}>
+              {/* Ouvre la messagerie du visiteur avec objet + canevas déjà remplis. */}
               <a
-                href={`mailto:${companyInfo.contact.email}`}
+                href={mailtoUrl(companyInfo.contact.email, t(ui.email.subject), t(ui.email.body))}
                 className="break-all font-semibold transition hover:text-flame-600"
               >
                 {companyInfo.contact.email}

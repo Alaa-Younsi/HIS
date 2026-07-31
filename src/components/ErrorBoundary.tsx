@@ -49,8 +49,8 @@ export class ErrorBoundary extends Component<Props, State> {
               +213 550 70 00 36
             </a>
             {' — '}
-            <a href="mailto:hvac.industrial.solution@gmail.com" className="font-semibold hover:text-flame-600">
-              hvac.industrial.solution@gmail.com
+            <a href="mailto:contact@his-hvac.com" className="font-semibold hover:text-flame-600">
+              contact@his-hvac.com
             </a>
           </p>
         </div>

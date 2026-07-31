@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
-import { telUrl } from '@/content/company';
+import { socialLinks, telUrl } from '@/content/company';
 import { useCompanyInfo, useServices } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
@@ -83,29 +83,19 @@ export function Header() {
             <span className="h-4 w-px bg-white/20" />
             <LanguageSwitcher variant="light" />
             <span className="h-4 w-px bg-white/20" />
-            <div className="flex items-center gap-2">
-              {company.contact.linkedin && (
+            <div className="flex items-center gap-2.5">
+              {socialLinks(company.contact).map((social) => (
                 <a
-                  href={company.contact.linkedin}
+                  key={social.icon}
+                  href={social.url}
                   target="_blank"
                   rel="noreferrer noopener"
-                  aria-label="LinkedIn"
+                  aria-label={social.label}
                   className="text-white/70 transition hover:text-white"
                 >
-                  <Icon name="linkedin" size={16} />
+                  <Icon name={social.icon} size={16} />
                 </a>
-              )}
-              {company.contact.facebook && (
-                <a
-                  href={company.contact.facebook}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  aria-label="Facebook"
-                  className="text-white/70 transition hover:text-white"
-                >
-                  <Icon name="facebook" size={16} />
-                </a>
-              )}
+              ))}
             </div>
           </div>
         </div>

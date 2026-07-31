@@ -2,6 +2,8 @@
   "name": "HIS — HVAC and Industrial Solution",
   "short_name": "HIS",
   "description": "Études, installation et maintenance de systèmes HVAC, désenfumage et protection incendie en Algérie.",
+  "id": "/",
+  "scope": "/",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

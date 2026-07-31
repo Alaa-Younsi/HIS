@@ -181,8 +181,13 @@ function mapCompanyInfo(row: CompanyInfoRow): Company {
       city: row.city,
       country: row.country,
       hours: asLocalized(row.hours),
-      linkedin: row.linkedin_url,
-      facebook: row.facebook_url,
+      // `?? ` et non `||` : une chaîne vide en base est un choix (« masquer ce
+      // réseau »), alors qu'une colonne absente — tant que la migration qui
+      // l'ajoute n'a pas été appliquée — doit retomber sur le contenu statique.
+      linkedin: row.linkedin_url ?? company.contact.linkedin,
+      facebook: row.facebook_url ?? company.contact.facebook,
+      instagram: row.instagram_url ?? company.contact.instagram,
+      tiktok: row.tiktok_url ?? company.contact.tiktok,
     },
     stats: Array.isArray(row.stats) ? (row.stats as Company['stats']) : company.stats,
   };

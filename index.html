@@ -22,7 +22,8 @@
       s'affiche sans image ni description. Les valeurs correspondent à la page
       d'accueil (français) — la version montrée par défaut au partage.
       Les URL doivent être ABSOLUES. ⚠️ Si le domaine change, mettre à jour ces
-      URL ET la variable VITE_SITE_URL sur Vercel.
+      URL ET `siteUrl` dans src/content/company.ts (ou la variable
+      VITE_SITE_URL sur Vercel, qui a la priorité).
     -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="HIS — HVAC and Industrial Solution" />
@@ -34,8 +35,8 @@
       property="og:description"
       content="HIS conçoit, installe et entretient vos systèmes de climatisation, ventilation, désenfumage et protection incendie. Bureau d'études et équipes qualifiées basés à Blida. Devis gratuit."
     />
-    <meta property="og:url" content="https://his-steel.vercel.app/" />
-    <meta property="og:image" content="https://his-steel.vercel.app/og-image.png" />
+    <meta property="og:url" content="https://www.his-hvac.com/" />
+    <meta property="og:image" content="https://www.his-hvac.com/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:type" content="image/png" />
@@ -53,7 +54,7 @@
       name="twitter:description"
       content="HIS conçoit, installe et entretient vos systèmes de climatisation, ventilation, désenfumage et protection incendie. Bureau d'études et équipes qualifiées basés à Blida. Devis gratuit."
     />
-    <meta name="twitter:image" content="https://his-steel.vercel.app/og-image.png" />
+    <meta name="twitter:image" content="https://www.his-hvac.com/og-image.png" />
     <meta name="twitter:image:alt" content="HIS — HVAC and Industrial Solution, Blida, Algérie" />
 
     <link rel="icon" type="image/png" href="/favicon.png" />
@@ -88,7 +89,9 @@
         <p>
           Ce site nécessite JavaScript. Contactez-nous directement :
           <a href="tel:+213550700036">+213 550 70 00 36</a> —
-          <a href="mailto:hvac.industrial.solution@gmail.com">hvac.industrial.solution@gmail.com</a>
+          <a href="mailto:contact@his-hvac.com?subject=Demande%20de%20devis%20%E2%80%94%20HIS"
+            >contact@his-hvac.com</a
+          >
         </p>
       </div>
     </noscript>

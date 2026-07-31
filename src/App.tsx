@@ -1,10 +1,10 @@
 import { lazy, Suspense } from 'react';
-import { Navigate, Route, Routes, useParams } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { adminRoutes } from '@/admin/AdminApp';
 import { Layout } from '@/components/Layout';
 import { detectPreferredLang, LanguageProvider } from '@/i18n/LanguageProvider';
 import { isLang } from '@/i18n/types';
-import { paths } from '@/routes';
+import { isKnownPath, paths } from '@/routes';
 import { Home } from '@/pages/Home';
 
 // La page d'accueil est dans le bundle initial ; le reste est chargé à la demande.
@@ -40,9 +40,21 @@ function LangLayout() {
   );
 }
 
-/** "/" → langue du navigateur (ou dernier choix mémorisé). */
+/**
+ * URL sans préfixe de langue → même page, dans la langue du navigateur (ou le
+ * dernier choix mémorisé) : "/" → "/fr", "/contact" → "/fr/contact".
+ *
+ * Conserver la page demandée compte : un lien partagé ou une adresse tapée à la
+ * main sans le préfixe ("his-hvac.com/contact") amenait tout le monde à
+ * l'accueil — visiteur perdu, et redirection vers l'accueil que Google
+ * interprète comme une page inexistante.
+ */
 function RootRedirect() {
-  return <Navigate to={`/${detectPreferredLang()}`} replace />;
+  const { pathname } = useLocation();
+  const [first, ...rest] = pathname.split('/').filter(Boolean);
+  const kept = first && isKnownPath(first) ? [first, ...rest] : [];
+
+  return <Navigate to={`/${[detectPreferredLang(), ...kept].join('/')}`} replace />;
 }
 
 export function App() {

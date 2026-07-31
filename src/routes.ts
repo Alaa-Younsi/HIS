@@ -23,6 +23,15 @@ export function href(lang: Lang, key: PathKey, sub?: string): string {
   return `/${segments.join('/')}`;
 }
 
+/**
+ * Le segment correspond-il à une page du site (hors préfixe de langue) ?
+ * Sert à rattraper les adresses tapées ou partagées sans préfixe — "/contact"
+ * plutôt que "/fr/contact".
+ */
+export function isKnownPath(segment: string): boolean {
+  return Object.values(paths).some((path) => path !== '' && path === segment);
+}
+
 /** Toutes les URL du site — utilisé pour le sitemap et les balises hreflang. */
 export function allRoutes(serviceSlugs: readonly string[]): string[] {
   const keys = Object.keys(paths) as PathKey[];

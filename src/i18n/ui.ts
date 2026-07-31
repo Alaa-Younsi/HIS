@@ -73,6 +73,54 @@ export const ui = {
     },
     back: { fr: "Retour à l'accueil", en: 'Back to home', ar: 'العودة للرئيسية' },
   },
+  /**
+   * Contenu pré-rempli à l'ouverture de la messagerie quand on clique sur
+   * l'adresse e-mail (voir `mailtoUrl()` dans src/content/company.ts).
+   * Le canevas guide le visiteur : plus la demande est complète, moins il y a
+   * d'allers-retours avant le devis.
+   */
+  email: {
+    subject: {
+      fr: 'Demande de devis — HIS',
+      en: 'Quote request — HIS',
+      ar: 'طلب عرض سعر — HIS',
+    },
+    body: {
+      fr: `Bonjour HIS,
+
+Je souhaite obtenir un devis pour mon projet.
+
+Nom / Société :
+Téléphone :
+Lieu du chantier :
+Besoin (climatisation, ventilation, désenfumage, protection incendie…) :
+Délai souhaité :
+
+Merci d'avance.`,
+      en: `Hello HIS,
+
+I would like a quote for my project.
+
+Name / Company:
+Phone:
+Site location:
+Requirement (air conditioning, ventilation, smoke extraction, fire protection…):
+Expected timeline:
+
+Thank you in advance.`,
+      ar: `مرحبًا HIS،
+
+أود الحصول على عرض سعر لمشروعي.
+
+الاسم / الشركة:
+الهاتف:
+موقع الورشة:
+الحاجة (تكييف، تهوية، تصريف الدخان، الحماية من الحرائق…):
+الأجل المرغوب:
+
+شكرًا مسبقًا.`,
+    },
+  },
   footer: {
     rights: {
       fr: 'Tous droits réservés.',

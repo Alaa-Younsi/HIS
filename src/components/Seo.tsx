@@ -1,5 +1,5 @@
 import { useLocation } from 'react-router-dom';
-import { company, type Company } from '@/content/company';
+import { company, socialLinks, type Company } from '@/content/company';
 import { useLang } from '@/i18n/LanguageProvider';
 import { LANG_META, LANGS, type Localized } from '@/i18n/types';
 import { swapLangInPath } from '@/routes';
@@ -95,12 +95,16 @@ export function Seo({ title, description, image, jsonLd, noindex = false }: SeoP
 export function organizationJsonLd(info: Company, lang: 'fr' | 'en' | 'ar') {
   return {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    // `HVACBusiness` est le type schema.org exact du métier : il précise à
+    // Google la nature de l'activité, là où `LocalBusiness` seul reste
+    // générique. Les deux sont déclarés — le second reste le type large
+    // reconnu partout.
+    '@type': ['HVACBusiness', 'LocalBusiness'],
     '@id': `${company.siteUrl}/#organization`,
     name: company.legalName,
     alternateName: company.fullName,
     description: info.intro[lang],
-    url: company.siteUrl,
+    url: `${company.siteUrl}/${lang}`,
     logo: `${company.siteUrl}/logo-his.png`,
     image: `${company.siteUrl}/og-image.png`,
     email: info.contact.email,
@@ -112,9 +116,61 @@ export function organizationJsonLd(info: Company, lang: 'fr' | 'en' | 'ar') {
       addressRegion: info.contact.city,
       addressCountry: info.contact.country,
     },
+    // Point de contact complet : tous les numéros, l'e-mail, et les langues
+    // dans lesquelles l'équipe répond. C'est ce bloc qui alimente le bouton
+    // « Appeler » d'une fiche Google.
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'customer service',
+      telephone: info.contact.phones,
+      email: info.contact.email,
+      areaServed: 'DZ',
+      availableLanguage: ['fr', 'en', 'ar'],
+    },
+    openingHoursSpecification: OPENING_HOURS,
+    hasMap: `https://maps.google.com/maps?q=${encodeURIComponent(MAP_QUERY)}`,
     areaServed: { '@type': 'Country', name: 'Algeria' },
-    sameAs: [info.contact.linkedin, info.contact.facebook].filter(Boolean),
+    knowsLanguage: ['fr', 'en', 'ar'],
+    // `sameAs` relie le site aux profils officiels : c'est ainsi que Google
+    // rattache la page Facebook / Instagram / TikTok à la même entreprise.
+    sameAs: socialLinks(info.contact).map((social) => social.url),
     slogan: info.slogan[lang],
+  };
+}
+
+/**
+ * Horaires sous forme structurée — doivent rester cohérents avec le texte
+ * affiché (`company.contact.hours`, modifiable depuis le tableau de bord).
+ * Un moteur ne sait pas lire « Dimanche — Jeudi : 08h00 — 17h00 » : il lui faut
+ * ce format normalisé.
+ */
+const OPENING_HOURS = [
+  {
+    '@type': 'OpeningHoursSpecification',
+    dayOfWeek: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'],
+    opens: '08:00',
+    closes: '17:00',
+  },
+] as const;
+
+/** Adresse telle qu'interrogée sur Google Maps (identique à la carte de la page Contact). */
+const MAP_QUERY = "Haouch Ben Chergui, L'Arbaa, Blida, Algérie";
+
+/**
+ * Identité du site lui-même (distincte de l'entreprise) : c'est ce que Google
+ * utilise pour afficher le nom du site plutôt que le nom de domaine nu dans
+ * les résultats de recherche.
+ */
+export function websiteJsonLd(lang: 'fr' | 'en' | 'ar') {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    '@id': `${company.siteUrl}/#website`,
+    url: `${company.siteUrl}/${lang}`,
+    name: company.legalName,
+    alternateName: company.name,
+    inLanguage: LANG_META[lang].htmlLang,
+    publisher: { '@id': `${company.siteUrl}/#organization` },
   };
 }
 

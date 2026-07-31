@@ -9,6 +9,8 @@
 insert into company_info (
   id, slogan, tagline, hero_title, hero_highlight, hero_subtitle, intro, story, mission, expertise, closing,
   address, hours, phones, whatsapp, email, city, country, linkedin_url, facebook_url, whatsapp_message, stats
+  -- instagram_url / tiktok_url sont ajoutées par 0007_social_links.sql, qui les
+  -- renseigne aussi : rien à insérer ici (l'ordre des migrations le garantit).
 ) values (
   1,
   jsonb_build_object('fr', $$La performance commence par la confiance$$, 'en', $$Performance starts with trust$$, 'ar', $$الأداء يبدأ بالثقة$$),
@@ -53,11 +55,11 @@ insert into company_info (
   jsonb_build_object('fr', $$Dimanche — Jeudi : 08h00 — 17h00$$, 'en', $$Sunday — Thursday: 8:00 AM — 5:00 PM$$, 'ar', $$الأحد — الخميس: 08:00 — 17:00$$),
   array['+213 550 70 00 36', '+213 550 70 00 38', '+213 550 70 00 46'],
   '213550700036',
-  'hvac.industrial.solution@gmail.com',
+  'contact@his-hvac.com',
   'Blida',
   'DZ',
-  'https://www.linkedin.com/company/his-hvac-industrial-solution',
-  'https://www.facebook.com/his.hvac.industrial.solution',
+  '',
+  'https://www.facebook.com/profile.php?id=61572968753708',
   jsonb_build_object(
     'fr', $$Bonjour HIS, je souhaite obtenir un devis pour mon projet.$$,
     'en', $$Hello HIS, I would like a quote for my project.$$,

@@ -30,6 +30,8 @@ type Draft = {
   country: string;
   linkedin_url: string;
   facebook_url: string;
+  instagram_url: string;
+  tiktok_url: string;
   whatsapp_message: Localized;
   stats: StatDraft[];
 };
@@ -53,8 +55,12 @@ function fromRow(row: CompanyInfoRow): Draft {
     email: row.email,
     city: row.city,
     country: row.country,
-    linkedin_url: row.linkedin_url,
-    facebook_url: row.facebook_url,
+    // Colonnes ajoutées après coup : `?? ''` évite un champ « uncontrolled »
+    // si la migration correspondante n'a pas encore été appliquée.
+    linkedin_url: row.linkedin_url ?? '',
+    facebook_url: row.facebook_url ?? '',
+    instagram_url: row.instagram_url ?? '',
+    tiktok_url: row.tiktok_url ?? '',
     whatsapp_message: row.whatsapp_message as Localized,
     stats: (row.stats as StatDraft[]) ?? [],
   };
@@ -301,7 +307,26 @@ export function Entreprise() {
                 className={inputClass}
               />
             </Field>
+            <Field label={t.entreprise.instagram}>
+              <input
+                type="url"
+                value={draft.instagram_url}
+                onChange={(event) => setDraft({ ...draft, instagram_url: event.target.value })}
+                dir="ltr"
+                className={inputClass}
+              />
+            </Field>
+            <Field label={t.entreprise.tiktok}>
+              <input
+                type="url"
+                value={draft.tiktok_url}
+                onChange={(event) => setDraft({ ...draft, tiktok_url: event.target.value })}
+                dir="ltr"
+                className={inputClass}
+              />
+            </Field>
           </div>
+          <p className="mt-3 text-xs text-navy-900/45">{t.entreprise.socialHint}</p>
           <LocalizedTextField
             label={t.entreprise.whatsappMessage}
             value={draft.whatsapp_message}

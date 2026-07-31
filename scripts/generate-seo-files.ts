@@ -60,8 +60,12 @@ ${entries.join('\n')}
 </urlset>
 `;
 
+// Le tableau de bord n'a rien à faire dans l'index : il est derrière une
+// authentification et n'apporte aucun contenu public. `Disallow` évite aussi
+// que Google explore inutilement ces URL (budget d'exploration).
 const robots = `User-agent: *
 Allow: /
+Disallow: /admin
 
 Sitemap: ${origin}/sitemap.xml
 `;

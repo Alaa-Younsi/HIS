@@ -11,12 +11,16 @@ import type { Localized } from '@/i18n/types';
 /**
  * Domaine public du site — sans barre oblique finale.
  *
- * Le jour où le nom de domaine définitif est branché, il suffit de définir la
- * variable d'environnement `VITE_SITE_URL` dans Vercel (Settings → Environment
- * Variables) puis de redéployer : URL canoniques, hreflang, sitemap.xml,
- * robots.txt et images de partage suivent automatiquement. Aucun code à toucher.
+ * C'est LA source de vérité des URL canoniques, des balises hreflang, du
+ * sitemap.xml, du robots.txt et des images de partage. La variante « www » est
+ * la version canonique : le domaine nu (his-hvac.com) doit être redirigé vers
+ * elle côté Vercel (Settings → Domains), pour que Google ne voie qu'une seule
+ * adresse par page.
+ *
+ * `VITE_SITE_URL` permet de surcharger cette valeur (aperçu, domaine de test)
+ * sans toucher au code.
  */
-const siteUrl = (import.meta.env.VITE_SITE_URL ?? 'https://his-steel.vercel.app').replace(/\/+$/, '');
+const siteUrl = (import.meta.env.VITE_SITE_URL ?? 'https://www.his-hvac.com').replace(/\/+$/, '');
 
 export const company = {
   name: 'HIS',
@@ -91,7 +95,7 @@ export const company = {
     phones: ['+213 550 70 00 36', '+213 550 70 00 38', '+213 550 70 00 46'],
     /** Format international sans espaces ni « + » — utilisé par le lien WhatsApp. */
     whatsapp: '213550700036',
-    email: 'hvac.industrial.solution@gmail.com',
+    email: 'contact@his-hvac.com',
     address: {
       fr: "Haouch Ben Chergui SEC 09 GP13 N°38, L'Arbaa — Blida, Algérie",
       en: "Haouch Ben Chergui SEC 09 GP13 N°38, L'Arbaa — Blida, Algeria",
@@ -104,9 +108,20 @@ export const company = {
       en: 'Sunday — Thursday: 8:00 AM — 5:00 PM',
       ar: 'الأحد — الخميس: 08:00 — 17:00',
     } satisfies Localized,
-    /** Laissez la chaîne vide pour masquer l'icône dans le header et le footer. */
-    linkedin: 'https://www.linkedin.com/company/his-hvac-industrial-solution',
-    facebook: 'https://www.facebook.com/his.hvac.industrial.solution',
+    /**
+     * Réseaux sociaux. Laissez la chaîne vide pour masquer l'icône dans le
+     * header et le footer — c'est le cas de LinkedIn, sans page pour l'instant.
+     *
+     * ⚠️ Toujours coller l'adresse NUE du profil, sans les paramètres ajoutés
+     * par le bouton « Partager » (`?share_url=`, `?_r=`, `sec_uid=`…) : ce sont
+     * des jetons de session propres à l'appareil qui a copié le lien. Ils
+     * peuvent expirer, et Google ne les reconnaît pas comme le profil officiel
+     * de l'entreprise (balise `sameAs`).
+     */
+    linkedin: '',
+    facebook: 'https://www.facebook.com/profile.php?id=61572968753708',
+    instagram: 'https://www.instagram.com/hvac_industrial_solution',
+    tiktok: 'https://www.tiktok.com/@hvac.industrial.solution',
   },
 
   /** Message pré-rempli à l'ouverture de WhatsApp. */
@@ -152,6 +167,42 @@ export const whatsappUrl = (whatsappNumber: string, message: string) =>
 export const telUrl = (phone: string) => `tel:${phone.replace(/[^\d+]/g, '')}`;
 
 /**
+ * Réseaux sociaux renseignés, dans leur ordre d'affichage — une seule liste
+ * pour le header, le pied de page et la balise `sameAs` des données
+ * structurées. Ajouter un réseau ici l'affiche partout ; le laisser vide dans
+ * `company.contact` le fait disparaître partout.
+ */
+export const socialLinks = (contact: Company['contact']) =>
+  (
+    [
+      { icon: 'facebook', label: 'Facebook', url: contact.facebook },
+      { icon: 'instagram', label: 'Instagram', url: contact.instagram },
+      { icon: 'tiktok', label: 'TikTok', url: contact.tiktok },
+      { icon: 'linkedin', label: 'LinkedIn', url: contact.linkedin },
+    ] satisfies { icon: IconName; label: string; url: string }[]
+  ).filter((social) => social.url);
+
+/**
+ * Lien `mailto:` avec objet et corps pré-remplis.
+ *
+ * Un simple `mailto:adresse` ouvre un message vide : le visiteur doit tout
+ * rédiger, et beaucoup abandonnent. Ici la messagerie s'ouvre avec un objet
+ * clair (côté HIS : on sait d'où vient la demande) et un canevas à compléter
+ * dans la langue du visiteur — voir `ui.email` (src/i18n/ui.ts).
+ *
+ * Les sauts de ligne du corps doivent être encodés (`%0A`) : `encodeURIComponent`
+ * s'en charge. Sans encodage, la plupart des clients tronquent le message.
+ */
+export const mailtoUrl = (email: string, subject?: string, body?: string) => {
+  const query = [
+    subject && `subject=${encodeURIComponent(subject)}`,
+    body && `body=${encodeURIComponent(body)}`,
+  ].filter(Boolean);
+
+  return query.length ? `mailto:${email}?${query.join('&')}` : `mailto:${email}`;
+};
+
+/**
  * Forme complète de `company`, en types larges (pas les littéraux que `as const`
  * donnerait via `typeof company`) — c'est cette forme que useCompanyInfo() renvoie,
  * qu'elle vienne du contenu statique ci-dessus ou d'une ligne `company_info` lue
@@ -182,6 +233,8 @@ export type Company = {
     hours: Localized;
     linkedin: string;
     facebook: string;
+    instagram: string;
+    tiktok: string;
   };
   whatsappMessage: Localized;
   stats: readonly { value: string; label: Localized; icon: IconName }[];

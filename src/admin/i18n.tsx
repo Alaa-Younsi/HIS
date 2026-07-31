@@ -137,6 +137,10 @@ const fr = {
     country: 'Pays (code ISO)',
     linkedin: 'LinkedIn (optionnel)',
     facebook: 'Facebook (optionnel)',
+    instagram: 'Instagram (optionnel)',
+    tiktok: 'TikTok (optionnel)',
+    socialHint:
+      "Collez l'adresse du profil telle qu'elle apparaît dans la barre du navigateur, sans les paramètres ajoutés par le bouton « Partager » (tout ce qui suit un « ? »). Laissez vide pour masquer l'icône du réseau sur le site.",
     whatsappMessage: 'Message pré-rempli WhatsApp',
     phones: 'Téléphones',
     phonesHint: 'Le premier numéro est celui utilisé par le bouton « Appeler ».',
@@ -352,6 +356,10 @@ const en: AdminDict = {
     country: 'Country (ISO code)',
     linkedin: 'LinkedIn (optional)',
     facebook: 'Facebook (optional)',
+    instagram: 'Instagram (optional)',
+    tiktok: 'TikTok (optional)',
+    socialHint:
+      'Paste the profile address as shown in the browser bar, without the parameters added by the “Share” button (everything after a “?”). Leave empty to hide that network on the site.',
     whatsappMessage: 'Pre-filled WhatsApp message',
     phones: 'Phone numbers',
     phonesHint: 'The first number is the one used by the “Call” button.',
@@ -558,6 +566,10 @@ const ar: AdminDict = {
     country: 'الدولة (رمز ISO)',
     linkedin: 'لينكدإن (اختياري)',
     facebook: 'فيسبوك (اختياري)',
+    instagram: 'إنستغرام (اختياري)',
+    tiktok: 'تيك توك (اختياري)',
+    socialHint:
+      'الصق عنوان الحساب كما يظهر في شريط المتصفح، دون المعطيات التي يضيفها زر «مشاركة» (كل ما يأتي بعد «؟»). اتركه فارغًا لإخفاء أيقونة الشبكة من الموقع.',
     whatsappMessage: 'رسالة واتساب المُعبّأة مسبقًا',
     phones: 'أرقام الهاتف',
     phonesHint: 'الرقم الأول هو المستخدَم في زر «اتصال».',
