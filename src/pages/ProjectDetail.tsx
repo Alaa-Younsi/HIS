@@ -4,8 +4,8 @@ import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
 import { Seo, breadcrumbJsonLd } from '@/components/Seo';
 import { telUrl, whatsappUrl } from '@/content/company';
-import { projectCategories } from '@/content/projects';
-import { useCompanyInfo, useProjects } from '@/hooks/useContent';
+import { projectCategories, projects as staticProjects } from '@/content/projects';
+import { useAwaitingLiveData, useCompanyInfo, useProjects } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { href } from '@/routes';
@@ -60,8 +60,12 @@ export function ProjectDetail() {
   const companyInfo = useCompanyInfo();
   const projects = useProjects();
   const project = projects.find((item) => item.slug === slug);
+  const awaitingLiveData = useAwaitingLiveData(projects, staticProjects);
 
-  if (!project) return <Navigate to={href(lang, 'projects')} replace />;
+  if (!project) {
+    if (awaitingLiveData) return <div className="min-h-[70vh]" aria-busy="true" />;
+    return <Navigate to={href(lang, 'projects')} replace />;
+  }
 
   const category = projectCategories.find((item) => item.id === project.category);
   const others = projects.filter((item) => item.slug !== project.slug).slice(0, 3);

@@ -22,6 +22,8 @@ export function Demandes() {
   const [kindFilter, setKindFilter] = useState<KindFilter>('all');
   const [selected, setSelected] = useState<LeadRow | null>(null);
   const [confirmingDeleteAll, setConfirmingDeleteAll] = useState(false);
+  const [statusError, setStatusError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const reload = async () => {
     if (!supabase) {
@@ -29,8 +31,14 @@ export function Demandes() {
       return;
     }
     setLoading(true);
-    const { data } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
-    setLeads((data ?? []) as LeadRow[]);
+    const { data, error } = await supabase.from('leads').select('*').order('created_at', { ascending: false });
+    // En cas d'échec, on ne touche pas à `leads` : afficher une liste vidée
+    // se lirait comme « aucune demande » plutôt que comme une erreur réseau.
+    if (error) setLoadError(error.message);
+    else {
+      setLoadError(null);
+      setLeads((data ?? []) as LeadRow[]);
+    }
     setLoading(false);
   };
 
@@ -44,7 +52,14 @@ export function Demandes() {
 
   const setStatus = async (lead: LeadRow, status: LeadRow['status']) => {
     if (!supabase) return;
-    await supabase.from('leads').update({ status }).eq('id', lead.id);
+    setStatusError(null);
+    const { error } = await supabase.from('leads').update({ status }).eq('id', lead.id);
+    if (error) {
+      // Ne pas corriger l'affichage sur un échec : le panneau de détail
+      // resterait sinon bloqué sur un statut jamais réellement enregistré.
+      setStatusError(t.common.saveFailed);
+      return;
+    }
     setSelected((current) => (current?.id === lead.id ? { ...current, status } : current));
     await reload();
   };
@@ -111,6 +126,8 @@ export function Demandes() {
           </button>
         ))}
       </div>
+
+      {loadError && <p className="mt-4 text-sm text-flame-600">{loadError}</p>}
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
         <div className="overflow-x-auto rounded-xl border border-navy-100 bg-white">
@@ -185,6 +202,8 @@ export function Demandes() {
                   <option value="archived">{t.demandes.statusArchived}</option>
                 </select>
               </div>
+
+              {statusError && <p className="mt-2 text-sm text-flame-600">{statusError}</p>}
 
               <dl className="mt-5 space-y-3 text-sm">
                 {selected.organisation && (

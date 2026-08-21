@@ -3,7 +3,8 @@ import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
 import { Seo, breadcrumbJsonLd } from '@/components/Seo';
 import { company, telUrl, whatsappUrl } from '@/content/company';
-import { useCompanyInfo, useServices } from '@/hooks/useContent';
+import { services as staticServices } from '@/content/services';
+import { useAwaitingLiveData, useCompanyInfo, useServices } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { href } from '@/routes';
@@ -14,8 +15,12 @@ export function ServiceDetail() {
   const companyInfo = useCompanyInfo();
   const services = useServices();
   const service = services.find((item) => item.slug === slug);
+  const awaitingLiveData = useAwaitingLiveData(services, staticServices);
 
-  if (!service) return <Navigate to={href(lang, 'services')} replace />;
+  if (!service) {
+    if (awaitingLiveData) return <div className="min-h-[70vh]" aria-busy="true" />;
+    return <Navigate to={href(lang, 'services')} replace />;
+  }
 
   const others = services.filter((item) => item.slug !== service.slug).slice(0, 3);
 

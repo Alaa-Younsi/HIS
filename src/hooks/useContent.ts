@@ -6,7 +6,7 @@ import { sectors as staticSectors, type Sector } from '@/content/sectors';
 import { services as staticServices, type Service } from '@/content/services';
 import { strengths as staticStrengths, type Strength } from '@/content/strengths';
 import type { Partner } from '@/content/partners';
-import { supabase } from '@/lib/supabase';
+import { isSupabaseConfigured, supabase } from '@/lib/supabase';
 import {
   asLocalized,
   asLocalizedList,
@@ -47,6 +47,34 @@ function useLiveList<T>(
   }, []);
 
   return data;
+}
+
+/**
+ * Vrai tant que `current` est encore le tableau de secours statique ET
+ * qu'une lecture Supabase est en cours — utilisé par les fiches détaillées
+ * (ProjectDetail, ServiceDetail) pour ne PAS conclure « introuvable » avant
+ * d'avoir laissé une chance aux données live d'arriver.
+ *
+ * Sans ce garde-fou : le contenu statique ne contient que les fiches créées
+ * avant le déploiement — toute réalisation/service ajouté depuis l'admin en
+ * est absent. Un lien direct (partagé, favori, résultat de moteur de
+ * recherche) vers l'une de ces fiches déclenchait alors, au tout premier
+ * rendu (avant même que la requête Supabase n'ait eu le temps de répondre),
+ * une redirection immédiate vers la liste — la fiche n'était jamais
+ * atteignable autrement qu'en cliquant depuis une page où les données live
+ * étaient déjà chargées. Un filet de 5 s évite d'attendre indéfiniment si la
+ * lecture échoue réellement (réseau coupé, Supabase indisponible).
+ */
+export function useAwaitingLiveData<T>(current: readonly T[], staticFallback: readonly T[]): boolean {
+  const [timedOut, setTimedOut] = useState(false);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+    const timer = setTimeout(() => setTimedOut(true), 5000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return isSupabaseConfigured && current === staticFallback && !timedOut;
 }
 
 function mapService(row: ServiceRow): Service {

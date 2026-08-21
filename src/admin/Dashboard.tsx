@@ -18,6 +18,7 @@ export function Dashboard() {
   const { t, locale } = useAdminT();
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!supabase) {
@@ -29,8 +30,9 @@ export function Dashboard() {
       .select('*')
       .order('created_at', { ascending: false })
       .limit(200)
-      .then(({ data }) => {
-        setLeads((data ?? []) as LeadRow[]);
+      .then(({ data, error }) => {
+        if (error) setLoadError(error.message);
+        else setLeads((data ?? []) as LeadRow[]);
         setLoading(false);
       });
   }, []);
@@ -44,6 +46,8 @@ export function Dashboard() {
     <div>
       <h1 className="text-2xl text-navy-900">{t.dashboard.title}</h1>
       <p className="mt-1 text-sm text-navy-900/60">{t.dashboard.subtitle}</p>
+
+      {loadError && <p className="mt-4 text-sm text-flame-600">{loadError}</p>}
 
       <div className="mt-6 grid gap-4 sm:grid-cols-3">
         <StatCard label={t.dashboard.newRequests} value={loading ? '—' : newCount} />

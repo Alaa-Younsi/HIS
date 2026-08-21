@@ -14,6 +14,7 @@ const navItems: readonly { to: string; key: keyof ReturnType<typeof useAdminT>['
   { to: '/admin/pourquoi-his', key: 'pourquoiHis', icon: 'medal' },
   { to: '/admin/partenaires', key: 'partenaires', icon: 'clients' },
   { to: '/admin/demandes', key: 'demandes', icon: 'mail' },
+  { to: '/admin/compte', key: 'compte', icon: 'lock' },
 ];
 
 /** Bandeau visible tant que Supabase n'a pas été connecté — voir SUPABASE_SETUP.md. */

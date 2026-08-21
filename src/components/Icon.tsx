@@ -51,6 +51,7 @@ const paths = {
   menu: 'M3.75 7h16.5M3.75 12h16.5M3.75 17h16.5',
   filter: 'M3.75 6h16.5M6.75 12h10.5M10 18h4',
   video: 'M3.75 6.75h10.5v10.5H3.75zM14.25 10l6-3.25v10.5l-6-3.25Z',
+  lock: 'M6.75 10.75h10.5v9.5H6.75zM8.5 10.75V7a3.5 3.5 0 0 1 7 0v3.75M12 14.5v2.5',
 } as const;
 
 /** Icônes pleines (logos réseaux + WhatsApp) — rendues séparément. */

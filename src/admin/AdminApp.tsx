@@ -7,6 +7,7 @@ import { AdminLangProvider } from './i18n';
 
 // Pages de contenu chargées à la demande — le squelette (shell + tableau de bord
 // + connexion) reste dans le même bundle, le reste se charge à l'ouverture.
+const Account = lazy(() => import('./pages/Account').then((m) => ({ default: m.Account })));
 const Demandes = lazy(() => import('./pages/Demandes').then((m) => ({ default: m.Demandes })));
 const Entreprise = lazy(() => import('./pages/Entreprise').then((m) => ({ default: m.Entreprise })));
 const Partenaires = lazy(() => import('./pages/Partenaires').then((m) => ({ default: m.Partenaires })));
@@ -51,6 +52,7 @@ export const adminRoutes = (
       <Route path="pourquoi-his" element={<PourquoiHis />} />
       <Route path="partenaires" element={<Partenaires />} />
       <Route path="demandes" element={<Demandes />} />
+      <Route path="compte" element={<Account />} />
     </Route>
   </Route>
 );
