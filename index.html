@@ -78,6 +78,14 @@
 
     <!-- La carte Google n'est chargée que sur la page Contact : on prépare la connexion sans bloquer le rendu. -->
     <link rel="dns-prefetch" href="https://maps.google.com" />
+
+    <!--
+      Photos/vidéos envoyées depuis l'admin (Supabase Storage) : établit la
+      connexion HTTPS avant que la première requête d'image ne soit émise.
+      %VITE_SUPABASE_URL% est substitué par Vite au build à partir de .env —
+      vide (donc sans effet, ni erreur) tant que Supabase n'est pas configuré.
+    -->
+    <link rel="preconnect" href="%VITE_SUPABASE_URL%" crossorigin />
   </head>
   <body>
     <div id="root"></div>

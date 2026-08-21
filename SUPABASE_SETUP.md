@@ -37,17 +37,33 @@ Ne renumérotez jamais un fichier déjà exécuté sur un projet réel — une
 modification future s'ajoute toujours dans un nouveau fichier
 `0005_...sql`.
 
-## 3. Créer le bucket de stockage des photos
+## 3. Créer le bucket de stockage des photos et vidéos
 
-**Storage → New bucket** :
+Depuis `0008_project_media.sql`, le bucket `site-media` est créé
+**automatiquement** en exécutant les migrations (étape 2) — rien à faire ici
+si vous exécutez les migrations dans l'ordre jusqu'au bout.
 
-- Nom : `site-media` (exactement ce nom — c'est celui utilisé par le code)
-- **Public bucket** : coché (les photos doivent être visibles par tous les
-  visiteurs du site)
+**Vérification importante si les migrations 0005+ n'ont pas encore été
+exécutées sur ce projet** : sans ce bucket, **aucun** envoi de photo ou vidéo
+depuis l'admin ne fonctionne — pas seulement pour les réalisations, pour
+Services, Partenaires et Avis aussi. Pour vérifier : **Storage** dans le
+tableau de bord Supabase doit lister un bucket `site-media` (public). S'il
+est absent, exécutez `0008_project_media.sql` (voir étape 2), ou créez-le
+manuellement : **Storage → New bucket**, nom `site-media` (exactement), **Public
+bucket** coché.
 
 Les politiques de lecture/écriture de ce bucket sont déjà créées par
 `0002_rls.sql` (lecture publique, écriture réservée aux comptes connectés) —
 il n'y a rien d'autre à configurer.
+
+**Plafond de taille de fichier** : le bucket est créé avec une limite de
+50 Mo par fichier — volontairement bas car ce projet est sur le plan gratuit
+Supabase (~1 Go de stockage, ~5 Go de bande passante **par mois**, partagés
+avec tout le reste du site : API, images, tout). Une vidéo de chantier plus
+longue doit passer par le champ « lien YouTube » de l'admin (gratuit,
+illimité, hors forfait) plutôt que par l'envoi de fichier. Si le projet passe
+un jour au plan payant (Pro), ce plafond peut être relevé dans **Storage →
+site-media → Configuration**.
 
 ## 4. Créer le compte administrateur
 

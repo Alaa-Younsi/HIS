@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
@@ -8,6 +9,50 @@ import { useCompanyInfo, useProjects } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
 import { href } from '@/routes';
+import { youtubeEmbedUrl, youtubeId, youtubeThumbnailUrl } from '@/lib/video';
+
+/**
+ * Facade YouTube : n'affiche qu'une vignette statique tant que le visiteur
+ * n'a pas cliqué. Charger l'iframe YouTube directement (même sans lecture)
+ * télécharge son propre JavaScript sur chaque visite de la page — inutile
+ * pour la quasi-totalité des visiteurs qui ne regardent pas la vidéo.
+ */
+function YoutubeEmbed({ id, title }: { id: string; title: string }) {
+  const [loaded, setLoaded] = useState(false);
+
+  if (loaded) {
+    return (
+      <iframe
+        src={`${youtubeEmbedUrl(id)}?autoplay=1`}
+        title={title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="aspect-video w-full rounded-lg"
+      />
+    );
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => setLoaded(true)}
+      aria-label={title}
+      className="group relative aspect-video w-full overflow-hidden rounded-lg bg-navy-900"
+    >
+      <img
+        src={youtubeThumbnailUrl(id)}
+        alt=""
+        loading="lazy"
+        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+      />
+      <span className="absolute inset-0 grid place-items-center bg-navy-950/25 transition group-hover:bg-navy-950/35">
+        <span className="grid h-16 w-16 place-items-center rounded-full bg-flame-500 text-white shadow-lg">
+          <Icon name="play" size={28} />
+        </span>
+      </span>
+    </button>
+  );
+}
 
 export function ProjectDetail() {
   const { lang, t } = useLang();
@@ -115,15 +160,21 @@ export function ProjectDetail() {
               <>
                 <h2 className="mt-10 text-2xl text-navy-900">{t(ui.sections.videos)}</h2>
                 <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                  {project.videos.map((videoUrl) => (
-                    <video
-                      key={videoUrl}
-                      src={videoUrl}
-                      controls
-                      preload="metadata"
-                      className="w-full rounded-lg bg-navy-900"
-                    />
-                  ))}
+                  {project.videos.map((videoUrl) => {
+                    const ytId = youtubeId(videoUrl);
+                    return ytId ? (
+                      <YoutubeEmbed key={videoUrl} id={ytId} title={t(project.title)} />
+                    ) : (
+                      <video
+                        key={videoUrl}
+                        src={videoUrl}
+                        controls
+                        preload="none"
+                        poster={project.image}
+                        className="aspect-video w-full rounded-lg bg-navy-900"
+                      />
+                    );
+                  })}
                 </div>
               </>
             )}

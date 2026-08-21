@@ -71,11 +71,17 @@ catégorie restent seules affichées sur la vignette de la liste.
 - **Lien (slug)** : l'adresse de la fiche détaillée. Se remplit
   automatiquement à partir du titre en français, modifiable — évitez de le
   changer sur une réalisation déjà en ligne.
-- **Galerie de photos** et **Vidéos** : ajoutez plusieurs fichiers à la fois.
-  Les vidéos sont limitées à 200 Mo par fichier (formats MP4, WebM, OGG,
-  MOV) ; en cas d'échec d'envoi malgré une vidéo sous cette taille, vérifiez
-  le plafond de taille de fichier réglé sur le projet Supabase
-  (Storage → Settings → Upload file size limit).
+- **Galerie de photos** : ajoutez plusieurs photos à la fois. Chaque photo
+  est automatiquement compressée à l'envoi, puis servie à chaque visiteur
+  dans une taille adaptée à son écran (pas la pleine résolution sur une
+  vignette) — aucune action requise.
+- **Vidéos — privilégiez un lien YouTube.** Collez le lien dans le champ
+  prévu (mettez la vidéo en « non répertoriée » sur YouTube si elle ne doit
+  pas apparaître dans les recherches) : hébergement gratuit et illimité, sans
+  impact sur le forfait Supabase du site. L'envoi direct d'un fichier reste
+  possible pour un clip très court (formats MP4, WebM, OGG, MOV, 50 Mo max)
+  mais consomme le forfait de bande passante Supabase — voir « Stockage des
+  photos et vidéos » ci-dessous.
 
 ### Secteurs
 
@@ -111,6 +117,45 @@ Toutes les demandes de devis et messages de contact reçus depuis le site.
 Quand vous ajoutez une photo (bouton « Choisir une photo » ou galerie), elle
 est automatiquement redimensionnée avant l'envoi — vous pouvez déposer une
 photo prise directement avec un téléphone, pas besoin de la retoucher avant.
+Chaque visiteur reçoit ensuite une taille adaptée à son écran, jamais la
+pleine résolution pour une petite vignette — c'est automatique, rien à faire.
+
+## Stockage des photos et vidéos, et forfait Supabase
+
+**Où sont stockés les fichiers ?**
+
+- Les photos déjà présentes sur le site avant la mise en place du tableau de
+  bord (photos de services, de réalisations, logos…) sont des fichiers du
+  projet, livrés par Vercel — elles ne consomment rien du forfait Supabase.
+- Toute photo ajoutée **depuis le tableau de bord** est envoyée vers
+  Supabase Storage (le bucket `site-media`) et consomme le forfait Supabase
+  à chaque fois qu'un visiteur la voit.
+- Une vidéo ajoutée en **lien YouTube** ne consomme rien du tout côté
+  Supabase — YouTube héberge et diffuse la vidéo directement.
+- Une vidéo envoyée en **fichier** consomme le forfait Supabase, et pèse
+  largement plus lourd qu'une photo (quelques Mo pour une photo, plusieurs
+  dizaines de Mo pour quelques secondes de vidéo) — c'est le poste qui
+  épuise un forfait le plus vite.
+
+**Le forfait actuel (plan gratuit Supabase)** : environ 1 Go de stockage et
+5 Go de bande passante **par mois**, partagés entre les photos, les vidéos
+envoyées en fichier, et le fonctionnement général du site (formulaires,
+tableau de bord…). C'est pourquoi :
+
+- les vidéos privilégient un lien YouTube (voir « Réalisations » ci-dessus) ;
+- l'envoi direct d'un fichier vidéo est plafonné à 50 Mo ;
+- chaque photo est automatiquement compressée à l'envoi puis livrée en
+  plusieurs tailles selon l'écran du visiteur, pour limiter ce qui est
+  réellement transmis, pas seulement ce qui est stocké.
+
+**Si le site devient plus fréquenté** (beaucoup de vidéos, beaucoup de
+visiteurs), le forfait gratuit peut ne plus suffire — Supabase ne facture
+rien automatiquement au-delà (pas de carte enregistrée), il ralentit ou
+restreint l'accès jusqu'au mois suivant. Il n'est pas nécessaire de passer
+par un service tiers comme Cloudinary : passer au plan payant Supabase
+(Pro, environ 25 $/mois, 8 Go de stockage + 250 Go de bande passante inclus)
+suffit largement, et ne demande aucun changement de code. Pour surveiller
+l'usage : tableau de bord Supabase → **Settings → Usage**.
 
 ## Ce que le tableau de bord ne fait pas (pour l'instant)
 

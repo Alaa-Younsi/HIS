@@ -23,8 +23,16 @@ export async function uploadSiteImage(file: File, folder: string): Promise<strin
 }
 
 const ACCEPTED_VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
-/** Garde-fou côté client — le plafond réel du bucket (voir 0008_project_media.sql) est de 200 Mo. */
-const MAX_VIDEO_BYTES = 200 * 1024 * 1024;
+/**
+ * Garde-fou côté client — le plafond réel du bucket (voir
+ * 0008_project_media.sql) est de 50 Mo. Volontairement bas : le plan Supabase
+ * de ce projet est gratuit (~1 Go de stockage, ~5 Go de bande passante par
+ * MOIS, partagés avec tout le reste du site) — une seule vidéo de 200 Mo
+ * regardée une trentaine de fois épuiserait le forfait mensuel à elle seule.
+ * Pour une vidéo plus longue ou plus lourde, préférez le champ « lien
+ * YouTube » (VideoManager) : hébergement gratuit et illimité, hors forfait.
+ */
+const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
 
 /**
  * Envoie une vidéo de chantier vers le bucket public "site-media", sans
@@ -39,7 +47,7 @@ export async function uploadSiteVideo(file: File, folder: string): Promise<strin
     throw new Error('Format vidéo non pris en charge — utilisez MP4, WebM, OGG ou MOV.');
   }
   if (file.size > MAX_VIDEO_BYTES) {
-    throw new Error('Vidéo trop volumineuse — 200 Mo maximum.');
+    throw new Error('Vidéo trop volumineuse — 50 Mo maximum. Pour une vidéo plus longue, utilisez plutôt un lien YouTube.');
   }
 
   const path = `${folder}/${slugifyFilename(file.name)}`;

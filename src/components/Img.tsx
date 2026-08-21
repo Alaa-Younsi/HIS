@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { imageVariants } from '@/content/image-variants';
+import { supabaseSrcSet } from '@/lib/image';
 import { Icon, type IconName } from './Icon';
 
 /** "/images/x.jpg" + 800 + "webp" → "/images/x-800.webp" */
@@ -42,11 +43,34 @@ export function Img({
   sizes,
 }: ImgProps) {
   const [status, setStatus] = useState<'loading' | 'loaded' | 'error'>('loading');
+  // Repli si le service de transformation Supabase refuse la requête (projet
+  // sans transformations actives, objet inexistant…) : les navigateurs ne
+  // retombent PAS sur `src` quand un candidat de `srcset` échoue, il faut le
+  // faire nous-mêmes en désactivant le srcset et en relançant le chargement
+  // sur le fichier plein format.
+  const [storageSrcSetFailed, setStorageSrcSetFailed] = useState(false);
 
-  // Déclinaisons générées par scripts/generate-image-variants.py. Absentes
-  // (photo ajoutée depuis), on retombe sur le fichier pleine résolution.
+  useEffect(() => {
+    setStorageSrcSetFailed(false);
+    setStatus('loading');
+  }, [src]);
+
+  // Déclinaisons générées par scripts/generate-image-variants.py pour les
+  // photos statiques du dépôt (public/images/…). Pour une photo envoyée
+  // depuis l'admin (Supabase Storage), on demande les déclinaisons à la volée
+  // au service de transformation — voir supabaseSrcSet(). Ni l'un ni l'autre
+  // (photo tierce, ou service indisponible) : on sert le fichier tel quel.
   const widths = imageVariants[src];
+  const storageSrcSet = !widths && !storageSrcSetFailed ? supabaseSrcSet(src) : undefined;
   const resolution = sizes ?? '100vw';
+
+  const handleError = () => {
+    if (storageSrcSet) {
+      setStorageSrcSetFailed(true);
+      return;
+    }
+    setStatus('error');
+  };
 
   const image = (
     <img
@@ -55,9 +79,13 @@ export function Img({
       loading={priority ? 'eager' : 'lazy'}
       decoding={priority ? 'sync' : 'async'}
       fetchPriority={priority ? 'high' : 'auto'}
-      {...(widths ? { srcSet: srcSet(src, widths, 'jpg'), sizes: resolution } : {})}
+      {...(widths
+        ? { srcSet: srcSet(src, widths, 'jpg'), sizes: resolution }
+        : storageSrcSet
+          ? { srcSet: storageSrcSet, sizes: resolution }
+          : {})}
       onLoad={() => setStatus('loaded')}
-      onError={() => setStatus('error')}
+      onError={handleError}
       className={`h-full w-full object-cover transition-opacity duration-500 ${
         status === 'loaded' ? 'opacity-100' : 'opacity-0'
       } ${imgClassName}`}

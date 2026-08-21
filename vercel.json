@@ -44,7 +44,7 @@
         { "key": "X-DNS-Prefetch-Control", "value": "on" },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.supabase.co; font-src 'self' data:; connect-src 'self' https://*.supabase.co; frame-src https://www.google.com https://maps.google.com; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.supabase.co https://i.ytimg.com; media-src 'self' https://*.supabase.co; font-src 'self' data:; connect-src 'self' https://*.supabase.co; frame-src https://www.google.com https://maps.google.com https://www.youtube-nocookie.com; frame-ancestors 'self'; form-action 'self'; upgrade-insecure-requests"
         }
       ]
     }
