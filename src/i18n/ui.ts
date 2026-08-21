@@ -29,6 +29,8 @@ export const ui = {
     call: { fr: 'Appeler', en: 'Call', ar: 'اتصل' },
     email: { fr: 'Envoyer un e-mail', en: 'Send an email', ar: 'أرسل بريدًا' },
     backToServices: { fr: 'Tous les services', en: 'All services', ar: 'كل الخدمات' },
+    backToProjects: { fr: 'Toutes les réalisations', en: 'All projects', ar: 'كل الإنجازات' },
+    viewProject: { fr: 'Voir la réalisation', en: 'View project', ar: 'عرض الإنجاز' },
   },
   sections: {
     about: { fr: 'À propos de HIS', en: 'About HIS', ar: 'عن HIS' },
@@ -45,7 +47,9 @@ export const ui = {
     contact: { fr: 'Contactez-nous', en: 'Get in touch', ar: 'اتصل بنا' },
     applications: { fr: "Domaines d'application", en: 'Areas of application', ar: 'مجالات التطبيق' },
     otherServices: { fr: "D'autres services", en: 'Other services', ar: 'خدمات أخرى' },
+    otherProjects: { fr: "D'autres réalisations", en: 'Other projects', ar: 'إنجازات أخرى' },
     gallery: { fr: 'Photos de chantier', en: 'Site photos', ar: 'صور من الورشة' },
+    videos: { fr: 'Vidéos de chantier', en: 'Site videos', ar: 'فيديوهات من الورشة' },
   },
   labels: {
     address: { fr: 'Adresse', en: 'Address', ar: 'العنوان' },

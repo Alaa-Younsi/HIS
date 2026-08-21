@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useSupabaseTable } from '@/hooks/useSupabaseTable';
 import { ConfirmModal } from '@/admin/components/ConfirmModal';
 import { Field, LocalizedTextField, inputClass } from '@/admin/components/fields';
+import { GalleryManager } from '@/admin/components/GalleryManager';
 import { ImageUploader } from '@/admin/components/ImageUploader';
+import { VideoManager } from '@/admin/components/VideoManager';
 import { useAdminT } from '@/admin/i18n';
 import { projectCategories, type ProjectCategory } from '@/content/projects';
 import type { ProjectRow } from '@/types/db';
@@ -10,9 +12,21 @@ import type { Localized } from '@/i18n/types';
 
 const emptyLocalized: Localized = { fr: '', en: '', ar: '' };
 
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+}
+
 type Draft = {
+  slug: string;
   category: ProjectCategory;
   image_url: string;
+  gallery: readonly string[];
+  videos: readonly string[];
   title: Localized;
   location: Localized;
   client: Localized;
@@ -23,8 +37,11 @@ type Draft = {
 };
 
 const emptyDraft: Draft = {
+  slug: '',
   category: 'incendie',
   image_url: '',
+  gallery: [],
+  videos: [],
   title: emptyLocalized,
   location: emptyLocalized,
   client: emptyLocalized,
@@ -50,8 +67,11 @@ export function Realisations() {
   const startEdit = (row: ProjectRow) => {
     setEditingId(row.id);
     setDraft({
+      slug: row.slug,
       category: row.category as ProjectCategory,
       image_url: row.image_url,
+      gallery: Array.isArray(row.gallery) ? (row.gallery as string[]) : [],
+      videos: Array.isArray(row.videos) ? (row.videos as string[]) : [],
       title: row.title as Localized,
       location: row.location as Localized,
       client: (row.client as Localized | null) ?? emptyLocalized,
@@ -69,6 +89,10 @@ export function Realisations() {
 
   const save = async () => {
     if (!draft) return;
+    if (!draft.slug.trim()) {
+      setSaveError(t.realisations.slugRequired);
+      return;
+    }
     setSaving(true);
     setSaveError(null);
     try {
@@ -76,7 +100,7 @@ export function Realisations() {
       else if (editingId) await update(editingId, draft);
       cancel();
     } catch (err) {
-      setSaveError(err instanceof Error ? err.message : t.common.saveFailed);
+      setSaveError(err instanceof Error ? err.message : t.realisations.saveFailedSlug);
     } finally {
       setSaving(false);
     }
@@ -100,7 +124,29 @@ export function Realisations() {
 
       {editingId && draft && (
         <div className="mt-6 card space-y-5 p-6">
-          <LocalizedTextField label={t.common.title} required value={draft.title} onChange={(title) => setDraft({ ...draft, title })} />
+          <LocalizedTextField
+            label={t.common.title}
+            required
+            value={draft.title}
+            onChange={(title) =>
+              setDraft({
+                ...draft,
+                title,
+                slug: editingId === 'new' && !draft.slug ? slugify(title.fr) : draft.slug,
+              })
+            }
+          />
+
+          <Field label={t.realisations.slug} required hint={t.realisations.slugHint}>
+            <input
+              type="text"
+              value={draft.slug}
+              onChange={(event) => setDraft({ ...draft, slug: slugify(event.target.value) })}
+              dir="ltr"
+              className={inputClass}
+            />
+          </Field>
+
           <LocalizedTextField label={t.realisations.location} value={draft.location} onChange={(location) => setDraft({ ...draft, location })} />
           <LocalizedTextField label={t.realisations.client} value={draft.client} onChange={(client) => setDraft({ ...draft, client })} />
           <LocalizedTextField
@@ -110,8 +156,24 @@ export function Realisations() {
             textarea
           />
 
-          <Field label={t.common.photo}>
+          <Field label={t.realisations.mainPhoto}>
             <ImageUploader value={draft.image_url} onChange={(image_url) => setDraft({ ...draft, image_url })} folder="realisations" />
+          </Field>
+
+          <Field label={t.realisations.gallery} hint={t.realisations.galleryHint}>
+            <GalleryManager
+              value={draft.gallery}
+              onChange={(gallery) => setDraft({ ...draft, gallery })}
+              folder="realisations/gallery"
+            />
+          </Field>
+
+          <Field label={t.realisations.videos} hint={t.realisations.videosHint}>
+            <VideoManager
+              value={draft.videos}
+              onChange={(videos) => setDraft({ ...draft, videos })}
+              folder="realisations/videos"
+            />
           </Field>
 
           <div className="grid gap-5 sm:grid-cols-3">

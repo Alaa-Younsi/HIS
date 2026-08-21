@@ -9,6 +9,7 @@
  */
 import { mkdir, writeFile } from 'node:fs/promises';
 import { services } from '../src/content/services';
+import { projects } from '../src/content/projects';
 import { company } from '../src/content/company';
 import { LANGS } from '../src/i18n/types';
 import { paths } from '../src/routes';
@@ -28,6 +29,11 @@ const pages: { path: string; priority: number; changefreq: string }[] = [
   ...services.map((service) => ({
     path: `${paths.services}/${service.slug}`,
     priority: 0.8,
+    changefreq: 'monthly',
+  })),
+  ...projects.map((project) => ({
+    path: `${paths.projects}/${project.slug}`,
+    priority: 0.7,
     changefreq: 'monthly',
   })),
 ];

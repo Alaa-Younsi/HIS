@@ -64,13 +64,23 @@ Dans `src/content/projects.ts`, copiez un bloc complet (de `{` à `},`) et
 changez :
 
 - `id` — un identifiant unique, en minuscules avec des tirets
+- `slug` — l'adresse de la fiche détaillée (`/realisations/<slug>`), en
+  minuscules avec des tirets, sans accents
 - `category` — une des catégories listées en haut du fichier
-- `image` — le chemin de la photo (voir `public/images/README.md`)
+- `image` — le chemin de la photo principale (voir `public/images/README.md`)
+- `gallery` (optionnel) — un tableau de chemins de photos supplémentaires,
+  affichées sur la fiche détaillée
+- `videos` (optionnel) — un tableau de chemins de vidéos, affichées sur la
+  fiche détaillée
 - `title`, `location`, `year`, `description`
 
 Les filtres par catégorie de la page Réalisations se mettent à jour tout
 seuls : seules les catégories qui contiennent au moins une réalisation
 s'affichent.
+
+**Une fois Supabase connecté**, cette édition se fait plutôt depuis
+l'administration (« Réalisations ») : ajout de plusieurs photos et vidéos par
+glisser de fichiers, sans toucher au code — voir ADMIN_GUIDE.md.
 
 ### Ajouter un logo client
 

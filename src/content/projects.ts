@@ -10,9 +10,15 @@ export type ProjectCategory =
 
 export type Project = {
   id: string;
+  /** Utilisé dans l'URL de la fiche détaillée : /realisations/<slug>. */
+  slug: string;
   category: ProjectCategory;
   /** Déposez le fichier dans public/images/realisations/. Un visuel de repli s'affiche si absent. */
   image: string;
+  /** Photos supplémentaires affichées dans la galerie de la fiche détaillée. */
+  gallery?: readonly string[];
+  /** Vidéos de chantier affichées sur la fiche détaillée. */
+  videos?: readonly string[];
   title: Localized;
   location: Localized;
   /** Client / maître d'ouvrage — affiché sur la fiche. Laissez vide pour masquer. */
@@ -42,6 +48,7 @@ export const projectCategories: readonly { id: ProjectCategory; label: Localized
 export const projects: readonly Project[] = [
   {
     id: 'desenfumage-belle-colline',
+    slug: 'desenfumage-belle-colline',
     category: 'desenfumage',
     image: '/images/realisations/belle-colline.jpg',
     title: {
@@ -64,6 +71,7 @@ export const projects: readonly Project[] = [
   },
   {
     id: 'incendie-kalipap',
+    slug: 'incendie-kalipap',
     category: 'incendie',
     image: '/images/realisations/skid-pompage.jpg',
     title: {
@@ -82,6 +90,7 @@ export const projects: readonly Project[] = [
   },
   {
     id: 'ventilation-silos-ccls',
+    slug: 'ventilation-silos-ccls',
     category: 'ventilation',
     image: '/images/realisations/cta-industrie.jpg',
     title: {

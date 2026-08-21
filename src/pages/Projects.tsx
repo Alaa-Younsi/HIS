@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Icon } from '@/components/Icon';
 import { Img } from '@/components/Img';
 import { PageHero } from '@/components/Section';
@@ -7,11 +8,12 @@ import { projectCategories, type ProjectCategory } from '@/content/projects';
 import { useProjects } from '@/hooks/useContent';
 import { useLang } from '@/i18n/LanguageProvider';
 import { ui } from '@/i18n/ui';
+import { href } from '@/routes';
 
 type Filter = ProjectCategory | 'all';
 
 export function Projects() {
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const projects = useProjects();
   const [filter, setFilter] = useState<Filter>('all');
 
@@ -75,49 +77,62 @@ export function Projects() {
             <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {visible.map((project) => (
                 <li key={project.id} className="card-hover group overflow-hidden">
-                  <div className="relative">
-                    <Img
-                      src={project.image}
-                      alt={t(project.title)}
-                      ratio="4/3"
-                      fallbackIcon="fire"
-                      sizes="(min-width: 1240px) 372px, (min-width: 1024px) 31vw, (min-width: 640px) 47vw, 92vw"
-                      imgClassName="transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <span className="absolute start-4 top-4 rounded-full bg-flame-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
-                      {t(
-                        projectCategories.find((category) => category.id === project.category)?.label ?? {
-                          fr: '',
-                          en: '',
-                          ar: '',
-                        },
-                      )}
-                    </span>
-                  </div>
-
-                  <div className="p-6">
-                    <h2 className="text-lg leading-snug text-navy-900">{t(project.title)}</h2>
-                    <div className="mt-2 space-y-1.5">
-                      <p className="flex items-center gap-1.5 text-xs text-navy-900/70">
-                        <Icon name="pin" size={14} className="flex-none text-flame-500" />
-                        {t(project.location)}
-                        {project.year && <span className="text-navy-300">·</span>}
-                        {project.year}
-                      </p>
-                      {project.client && (
-                        <p className="flex items-center gap-1.5 text-xs text-navy-900/70">
-                          <Icon name="building" size={14} className="flex-none text-flame-500" />
-                          <span>
-                            <span className="font-semibold text-navy-900/80">{t(ui.labels.client)} : </span>
-                            {t(project.client)}
-                          </span>
-                        </p>
+                  <Link to={href(lang, 'projects', project.slug)} className="block">
+                    <div className="relative">
+                      <Img
+                        src={project.image}
+                        alt={t(project.title)}
+                        ratio="4/3"
+                        fallbackIcon="fire"
+                        sizes="(min-width: 1240px) 372px, (min-width: 1024px) 31vw, (min-width: 640px) 47vw, 92vw"
+                        imgClassName="transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <span className="absolute start-4 top-4 rounded-full bg-flame-500 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white">
+                        {t(
+                          projectCategories.find((category) => category.id === project.category)?.label ?? {
+                            fr: '',
+                            en: '',
+                            ar: '',
+                          },
+                        )}
+                      </span>
+                      {project.videos && project.videos.length > 0 && (
+                        <span className="absolute end-4 top-4 grid h-8 w-8 place-items-center rounded-full bg-navy-950/70 text-white backdrop-blur-sm">
+                          <Icon name="play" size={15} />
+                        </span>
                       )}
                     </div>
-                    <p className="mt-3 text-sm leading-relaxed text-navy-900/65">
-                      {t(project.description)}
-                    </p>
-                  </div>
+
+                    <div className="p-6">
+                      <h2 className="text-lg leading-snug text-navy-900 transition group-hover:text-flame-600">
+                        {t(project.title)}
+                      </h2>
+                      <div className="mt-2 space-y-1.5">
+                        <p className="flex items-center gap-1.5 text-xs text-navy-900/70">
+                          <Icon name="pin" size={14} className="flex-none text-flame-500" />
+                          {t(project.location)}
+                          {project.year && <span className="text-navy-300">·</span>}
+                          {project.year}
+                        </p>
+                        {project.client && (
+                          <p className="flex items-center gap-1.5 text-xs text-navy-900/70">
+                            <Icon name="building" size={14} className="flex-none text-flame-500" />
+                            <span>
+                              <span className="font-semibold text-navy-900/80">{t(ui.labels.client)} : </span>
+                              {t(project.client)}
+                            </span>
+                          </p>
+                        )}
+                      </div>
+                      <p className="mt-3 text-sm leading-relaxed text-navy-900/65">
+                        {t(project.description)}
+                      </p>
+                      <span className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-flame-600">
+                        {t(ui.cta.viewProject)}
+                        <Icon name="arrow" size={13} className="flip-rtl" />
+                      </span>
+                    </div>
+                  </Link>
                 </li>
               ))}
             </ul>

@@ -76,8 +76,11 @@ export function useServices(): readonly Service[] {
 function mapProject(row: ProjectRow): Project {
   return {
     id: row.id,
+    slug: row.slug,
     category: row.category as Project['category'],
     image: row.image_url,
+    gallery: Array.isArray(row.gallery) ? (row.gallery as string[]) : undefined,
+    videos: Array.isArray(row.videos) ? (row.videos as string[]) : undefined,
     title: asLocalized(row.title),
     location: asLocalized(row.location),
     client: row.client != null ? asLocalized(row.client) : undefined,

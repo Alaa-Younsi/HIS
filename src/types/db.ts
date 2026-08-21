@@ -53,8 +53,13 @@ export type ServiceRow = {
 
 export type ProjectRow = {
   id: string;
+  slug: string;
   category: string;
   image_url: string;
+  /** string[] de photos supplémentaires, affichées sur la fiche détaillée. */
+  gallery: Json;
+  /** string[] de vidéos de chantier, affichées sur la fiche détaillée. */
+  videos: Json;
   title: Json;
   location: Json;
   /** Optionnel : présent seulement si la colonne existe côté base. */

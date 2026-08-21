@@ -57,10 +57,25 @@ de la page du service.
 
 ### Réalisations
 
-La galerie de chantiers. Pour chacune : titre, lieu, année, description,
-catégorie (Protection incendie, Climatisation, Ventilation, Désenfumage,
-Chambres froides, Industriel — utilisée pour les filtres sur la page
-publique), et une photo.
+La galerie de chantiers. Pour chacune : titre, lien (slug), lieu, année,
+description, catégorie (Protection incendie, Climatisation, Ventilation,
+Désenfumage, Chambres froides, Industriel — utilisée pour les filtres sur la
+page publique), une photo principale, une galerie de photos supplémentaires
+et des vidéos de chantier.
+
+En cliquant sur une réalisation depuis la page publique, le visiteur accède à
+une fiche détaillée (`/realisations/<lien>`) qui affiche la description
+complète, toute la galerie de photos et les vidéos. La photo principale et la
+catégorie restent seules affichées sur la vignette de la liste.
+
+- **Lien (slug)** : l'adresse de la fiche détaillée. Se remplit
+  automatiquement à partir du titre en français, modifiable — évitez de le
+  changer sur une réalisation déjà en ligne.
+- **Galerie de photos** et **Vidéos** : ajoutez plusieurs fichiers à la fois.
+  Les vidéos sont limitées à 200 Mo par fichier (formats MP4, WebM, OGG,
+  MOV) ; en cas d'échec d'envoi malgré une vidéo sous cette taille, vérifiez
+  le plafond de taille de fichier réglé sur le projet Supabase
+  (Storage → Settings → Upload file size limit).
 
 ### Secteurs
 

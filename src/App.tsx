@@ -14,6 +14,9 @@ const ServiceDetail = lazy(() =>
   import('@/pages/ServiceDetail').then((m) => ({ default: m.ServiceDetail })),
 );
 const Projects = lazy(() => import('@/pages/Projects').then((m) => ({ default: m.Projects })));
+const ProjectDetail = lazy(() =>
+  import('@/pages/ProjectDetail').then((m) => ({ default: m.ProjectDetail })),
+);
 const Sectors = lazy(() => import('@/pages/Sectors').then((m) => ({ default: m.Sectors })));
 const Why = lazy(() => import('@/pages/Why').then((m) => ({ default: m.Why })));
 const Contact = lazy(() => import('@/pages/Contact').then((m) => ({ default: m.Contact })));
@@ -73,6 +76,7 @@ export function App() {
           <Route path={paths.services} element={<Services />} />
           <Route path={`${paths.services}/:slug`} element={<ServiceDetail />} />
           <Route path={paths.projects} element={<Projects />} />
+          <Route path={`${paths.projects}/:slug`} element={<ProjectDetail />} />
           <Route path={paths.sectors} element={<Sectors />} />
           <Route path={paths.why} element={<Why />} />
           <Route path={paths.contact} element={<Contact />} />
