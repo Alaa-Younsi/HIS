@@ -309,7 +309,7 @@ export function Home() {
           {/* Bandeau de vignettes — 5 de front sur grand écran, comme la charte. */}
           <ul className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
             {featuredProjects.map((project, index) => (
-              <Reveal as="li" key={project.id} delay={(index % 5) * 70}>
+              <Reveal as="li" key={project.slug} delay={(index % 5) * 70}>
                 <TiltCard strength={6}>
                   <Link
                     to={href(lang, 'projects')}

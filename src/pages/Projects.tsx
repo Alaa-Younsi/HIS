@@ -76,7 +76,7 @@ export function Projects() {
           ) : (
             <ul className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {visible.map((project) => (
-                <li key={project.id} className="card-hover group overflow-hidden">
+                <li key={project.slug} className="card-hover group overflow-hidden">
                   <Link to={href(lang, 'projects', project.slug)} className="block">
                     <div className="relative">
                       <Img

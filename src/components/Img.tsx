@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { imageVariants } from '@/content/image-variants';
 import { supabaseSrcSet } from '@/lib/image';
 import { Icon, type IconName } from './Icon';
@@ -50,10 +50,25 @@ export function Img({
   // sur le fichier plein format.
   const [storageSrcSetFailed, setStorageSrcSetFailed] = useState(false);
 
-  useEffect(() => {
+  // Remise a zero au changement de `src` PENDANT le rendu, et non dans un
+  // effet : un effet s'execute apres la peinture, donc potentiellement apres
+  // l'evenement `load` d'une image deja en cache. Il remettait alors `status`
+  // a 'loading' une fois l'image chargee et, aucun second `load` ne venant
+  // jamais, le visuel de repli restait affiche pour toujours. Cas typique :
+  // la liste des realisations se remonte quand les donnees Supabase
+  // remplacent le contenu statique, avec des photos deja en cache.
+  const [renderedSrc, setRenderedSrc] = useState(src);
+  if (renderedSrc !== src) {
+    setRenderedSrc(src);
     setStorageSrcSetFailed(false);
     setStatus('loading');
-  }, [src]);
+  }
+
+  // Filet de securite : si l'image est deja complete au moment ou React pose
+  // la ref, son `load` a pu passer avant que l'ecouteur ne soit en place.
+  const captureAlreadyLoaded = useCallback((node: HTMLImageElement | null) => {
+    if (node?.complete && node.naturalWidth > 0) setStatus('loaded');
+  }, []);
 
   // Déclinaisons générées par scripts/generate-image-variants.py pour les
   // photos statiques du dépôt (public/images/…). Pour une photo envoyée
@@ -74,6 +89,7 @@ export function Img({
 
   const image = (
     <img
+      ref={captureAlreadyLoaded}
       src={src}
       alt={alt}
       loading={priority ? 'eager' : 'lazy'}
