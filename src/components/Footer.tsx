@@ -138,7 +138,17 @@ export function Footer() {
           <p>
             © {new Date().getFullYear()} {company.legalName}. {t(ui.footer.rights)}
           </p>
-          <p className="text-white/45">{t(companyInfo.tagline)}</p>
+          <p className="text-white/45">
+            Website Developer by{' '}
+            <a
+              href="https://alaayounsi.vercel.app/"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="transition hover:text-flame-400"
+            >
+              Alaa Younsi
+            </a>
+          </p>
         </div>
       </div>
     </footer>
